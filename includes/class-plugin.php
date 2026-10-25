@@ -5,12 +5,12 @@
  * Components are plain objects with a single `register(): void` method that
  * does nothing but add hooks. Nothing happens at file-load time.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -71,10 +71,10 @@ final class Plugin {
 		}
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			\WP_CLI::add_command( 'afbm', Cli_Command::class );
+			\WP_CLI::add_command( 'eikvakt', Cli_Command::class );
 		}
 
-		do_action( 'afbm_loaded', $this );
+		do_action( 'ekbm_loaded', $this );
 	}
 
 	/**

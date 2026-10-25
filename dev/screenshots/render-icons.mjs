@@ -9,7 +9,7 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const root = resolve( import.meta.dirname, '../..' );
-const svg = await readFile( `${ root }/assets/logos/afrit-backup-manager-icon.svg`, 'utf8' );
+const svg = await readFile( `${ root }/assets/logos/eikvakt-backup-manager-icon.svg`, 'utf8' );
 const svgData = 'data:image/svg+xml;base64,' + Buffer.from( svg ).toString( 'base64' );
 
 await mkdir( `${ root }/.wordpress-org`, { recursive: true } );
@@ -23,10 +23,10 @@ const icon = async ( size, file ) => {
 	await page.screenshot( { path: file, omitBackground: true } );
 };
 
-await icon( 1024, `${ root }/assets/logos/afrit-backup-manager-icon-1024x1024.png` );
-await icon( 256, `${ root }/assets/logos/afrit-backup-manager-icon-256x256.png` );
+await icon( 1024, `${ root }/assets/logos/eikvakt-backup-manager-icon-1024x1024.png` );
+await icon( 256, `${ root }/assets/logos/eikvakt-backup-manager-icon-256x256.png` );
 // 64×64: the small app icon of the Dropbox App Console (branding).
-await icon( 64, `${ root }/assets/logos/afrit-backup-manager-icon-64x64.png` );
+await icon( 64, `${ root }/assets/logos/eikvakt-backup-manager-icon-64x64.png` );
 await icon( 256, `${ root }/.wordpress-org/icon-256x256.png` );
 await icon( 128, `${ root }/.wordpress-org/icon-128x128.png` );
 
@@ -40,7 +40,7 @@ const banner = async ( width, height, file ) => {
 			font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#D8F7FF">
 			<img src="${ svgData }" style="width:${ 170 * scale }px;height:${ 170 * scale }px">
 			<div>
-				<div style="font-size:${ 44 * scale }px;font-weight:700;letter-spacing:-0.5px">Afrit Backup Manager</div>
+				<div style="font-size:${ 44 * scale }px;font-weight:700;letter-spacing:-0.5px">Eikvakt Backup Manager</div>
 				<div style="font-size:${ 20 * scale }px;margin-top:${ 10 * scale }px;color:#67F4D1">Incremental backups · One-click restore &amp; migration</div>
 				<div style="font-size:${ 16 * scale }px;margin-top:${ 8 * scale }px;color:#8fb3d9">Dropbox · OneDrive · SFTP · FTP · Encrypted · 100% free</div>
 			</div>

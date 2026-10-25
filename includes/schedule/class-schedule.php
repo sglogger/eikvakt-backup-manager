@@ -15,12 +15,12 @@
  *
  * Free of WordPress: unit-tested on its own.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

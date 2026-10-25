@@ -12,12 +12,12 @@
  * query string: Microsoft refuses redirect URIs with query parameters for
  * personal accounts.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -131,7 +131,7 @@ final class OAuth {
 		}
 
 		if ( ! current_user_can( Admin::CAP ) ) {
-			wp_die( esc_html__( 'You do not have permission to do this.', 'afrit-backup-manager' ), '', [ 'response' => 403 ] );
+			wp_die( esc_html__( 'You do not have permission to do this.', 'eikvakt-backup-manager' ), '', [ 'response' => 403 ] );
 		}
 
 		$notice = '' === $error ? self::complete( $state, $code ) : 'oauth_failed';
@@ -141,7 +141,7 @@ final class OAuth {
 				[
 					'page'        => Admin::MENU_SETTINGS,
 					'tab'         => 'storage',
-					'afbm_notice' => $notice,
+					'ekbm_notice' => $notice,
 				],
 				admin_url( 'admin.php' )
 			)
@@ -187,7 +187,7 @@ final class OAuth {
 
 					$destination['config']['refresh_token'] = Secret_Cipher::encrypt( $refresh );
 					Destinations::save( $destination );
-					delete_transient( 'afbm_token_' . $destination['id'] );
+					delete_transient( 'ekbm_token_' . $destination['id'] );
 					$notice = 'oauth_ok';
 				} catch ( \Throwable $e ) {
 					$notice = 'oauth_failed';
@@ -204,7 +204,7 @@ final class OAuth {
 	 * @param callable(): array{0:string, 1:int} $refresh Returns [token, lifetime].
 	 */
 	public static function access_token( string $destination_id, callable $refresh ): string {
-		$cached = get_transient( 'afbm_token_' . $destination_id );
+		$cached = get_transient( 'ekbm_token_' . $destination_id );
 		if ( is_string( $cached ) && '' !== $cached ) {
 			$token = Secret_Cipher::decrypt( $cached );
 			if ( '' !== $token ) {
@@ -214,7 +214,7 @@ final class OAuth {
 
 		[ $token, $lifetime ] = $refresh();
 
-		set_transient( 'afbm_token_' . $destination_id, Secret_Cipher::encrypt( $token ), max( 60, $lifetime - 120 ) );
+		set_transient( 'ekbm_token_' . $destination_id, Secret_Cipher::encrypt( $token ), max( 60, $lifetime - 120 ) );
 
 		return $token;
 	}

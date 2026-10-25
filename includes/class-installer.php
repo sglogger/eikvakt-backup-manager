@@ -5,12 +5,12 @@
  * All schema and option defaults live here so there is exactly one place to
  * look when reasoning about what a fresh install produces.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -21,20 +21,20 @@ final class Installer {
 	// -------------------------------------------------------------------------
 	// Option names
 	// -------------------------------------------------------------------------
-	public const OPTION_VERSION        = 'afbm_version';
-	public const OPTION_DATA_VERSION   = 'afbm_data_version';
-	public const OPTION_SETTINGS       = 'afbm_settings';
-	public const OPTION_SCHEDULE       = 'afbm_schedule';
-	public const OPTION_SCHEDULE_STATE = 'afbm_schedule_state';
-	public const OPTION_RETENTION      = 'afbm_retention';
-	public const OPTION_DATABASE       = 'afbm_database';
-	public const OPTION_ENCRYPTION     = 'afbm_encryption';
-	public const OPTION_SECURITY       = 'afbm_security';
-	public const OPTION_DESTINATIONS   = 'afbm_destinations';
-	public const OPTION_STORAGE_KEY    = 'afbm_storage_key';
-	public const OPTION_EXPOSURE       = 'afbm_exposure';
-	public const OPTION_MIGRATION_KEYS = 'afbm_migration_keys';
-	public const OPTION_OAUTH_PENDING  = 'afbm_oauth_pending';
+	public const OPTION_VERSION        = 'ekbm_version';
+	public const OPTION_DATA_VERSION   = 'ekbm_data_version';
+	public const OPTION_SETTINGS       = 'ekbm_settings';
+	public const OPTION_SCHEDULE       = 'ekbm_schedule';
+	public const OPTION_SCHEDULE_STATE = 'ekbm_schedule_state';
+	public const OPTION_RETENTION      = 'ekbm_retention';
+	public const OPTION_DATABASE       = 'ekbm_database';
+	public const OPTION_ENCRYPTION     = 'ekbm_encryption';
+	public const OPTION_SECURITY       = 'ekbm_security';
+	public const OPTION_DESTINATIONS   = 'ekbm_destinations';
+	public const OPTION_STORAGE_KEY    = 'ekbm_storage_key';
+	public const OPTION_EXPOSURE       = 'ekbm_exposure';
+	public const OPTION_MIGRATION_KEYS = 'ekbm_migration_keys';
+	public const OPTION_OAUTH_PENDING  = 'ekbm_oauth_pending';
 
 	/**
 	 * Every option this plugin owns. Used by uninstall() so cleanup can never
@@ -64,12 +64,12 @@ final class Installer {
 	// -------------------------------------------------------------------------
 	// Cron hooks
 	// -------------------------------------------------------------------------
-	public const CRON_SCHEDULE_CHECK = 'afbm_schedule_check';
-	public const CRON_JOB_TICK       = 'afbm_job_tick';
-	public const CRON_EXPOSURE       = 'afbm_exposure_check';
+	public const CRON_SCHEDULE_CHECK = 'ekbm_schedule_check';
+	public const CRON_JOB_TICK       = 'ekbm_job_tick';
+	public const CRON_EXPOSURE       = 'ekbm_exposure_check';
 
 	/** Custom recurrence for the schedule check. */
-	public const INTERVAL_FIVE_MINUTES = 'afbm_five_minutes';
+	public const INTERVAL_FIVE_MINUTES = 'ekbm_five_minutes';
 
 	/**
 	 * Cron hook => recurrence. WP-Cron is request-driven, so on a quiet site
@@ -98,7 +98,7 @@ final class Installer {
 		// phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval -- the schedule check is a cheap comparison of two timestamps; five minutes is the resolution of the schedules offered.
 		$schedules[ self::INTERVAL_FIVE_MINUTES ] = [
 			'interval' => 5 * MINUTE_IN_SECONDS,
-			'display'  => __( 'Every five minutes (Afrit Backup Manager)', 'afrit-backup-manager' ),
+			'display'  => __( 'Every five minutes (Eikvakt Backup Manager)', 'eikvakt-backup-manager' ),
 		];
 
 		return $schedules;
@@ -110,7 +110,7 @@ final class Installer {
 
 	public static function table_runs(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'afbm_runs';
+		return $wpdb->prefix . 'ekbm_runs';
 	}
 
 	/**
@@ -146,8 +146,8 @@ final class Installer {
 			}
 		}
 
-		update_option( self::OPTION_VERSION, AFBM_VERSION, false );
-		update_option( self::OPTION_DATA_VERSION, AFBM_DATA_VERSION, false );
+		update_option( self::OPTION_VERSION, EKBM_VERSION, false );
+		update_option( self::OPTION_DATA_VERSION, EKBM_DATA_VERSION, false );
 	}
 
 	public static function deactivate(): void {
@@ -164,15 +164,15 @@ final class Installer {
 	public static function maybe_migrate(): void {
 		$stored = (string) get_option( self::OPTION_DATA_VERSION, '' );
 
-		if ( AFBM_DATA_VERSION !== $stored ) {
+		if ( EKBM_DATA_VERSION !== $stored ) {
 			self::create_tables();
 			self::seed_options();
 			Paths::ensure();
-			update_option( self::OPTION_DATA_VERSION, AFBM_DATA_VERSION, false );
+			update_option( self::OPTION_DATA_VERSION, EKBM_DATA_VERSION, false );
 		}
 
-		if ( AFBM_VERSION !== (string) get_option( self::OPTION_VERSION, '' ) ) {
-			update_option( self::OPTION_VERSION, AFBM_VERSION, false );
+		if ( EKBM_VERSION !== (string) get_option( self::OPTION_VERSION, '' ) ) {
+			update_option( self::OPTION_VERSION, EKBM_VERSION, false );
 		}
 
 		self::verify_tables();
@@ -210,14 +210,14 @@ final class Installer {
 			delete_option( $option );
 		}
 
-		delete_metadata( 'user', 0, 'afbm_exposure_dismissed', '', true );
+		delete_metadata( 'user', 0, 'ekbm_exposure_dismissed', '', true );
 
 		global $wpdb;
 		$runs = self::table_runs();
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- uninstall drops our own table; the name is built from $wpdb->prefix.
 		$wpdb->query( "DROP TABLE IF EXISTS {$runs}" );
 
-		delete_transient( 'afbm_tables_verified' );
+		delete_transient( 'ekbm_tables_verified' );
 	}
 
 	/**
@@ -225,7 +225,7 @@ final class Installer {
 	 * another tool). Checked at most once a day.
 	 */
 	private static function verify_tables(): void {
-		if ( get_transient( 'afbm_tables_verified' ) ) {
+		if ( get_transient( 'ekbm_tables_verified' ) ) {
 			return;
 		}
 
@@ -239,7 +239,7 @@ final class Installer {
 			self::create_tables();
 		}
 
-		set_transient( 'afbm_tables_verified', 1, DAY_IN_SECONDS );
+		set_transient( 'ekbm_tables_verified', 1, DAY_IN_SECONDS );
 	}
 
 	/**

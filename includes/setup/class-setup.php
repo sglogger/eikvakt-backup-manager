@@ -10,12 +10,12 @@
  *   - store on this server (more destinations can be added at any time)
  *   - e-mail the site administrator when something goes wrong
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

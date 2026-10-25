@@ -6,12 +6,12 @@
  * state, so a site with hundreds of thousands of files is scanned over as
  * many requests as it takes, never in one that the host kills half-way.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

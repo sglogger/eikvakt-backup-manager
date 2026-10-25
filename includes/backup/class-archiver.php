@@ -10,12 +10,12 @@
  * Already-compressed formats are stored rather than deflated — re-compressing
  * a JPEG costs CPU and saves nothing.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

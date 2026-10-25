@@ -21,12 +21,12 @@
  * as changed. The database is imported into temporary tables and swapped in
  * at the very end in one RENAME TABLE statement.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -53,7 +53,7 @@ final class Restore_Job implements Job_Handler {
 		if ( null === $manifest ) {
 			throw new \RuntimeException( 'Unknown backup.' );
 		}
-		if ( (int) $manifest->data['format'] > AFBM_FORMAT_VERSION ) {
+		if ( (int) $manifest->data['format'] > EKBM_FORMAT_VERSION ) {
 			throw new \RuntimeException( 'This backup was made by a newer version of the plugin. Update the plugin first.' );
 		}
 
@@ -236,7 +236,7 @@ final class Restore_Job implements Job_Handler {
 		}
 
 		$state['fetch'] = Transfer::download_step( (array) $state['fetch'], (string) $state['dir'], $deadline );
-		$job['message'] = __( 'Downloading backup files', 'afrit-backup-manager' );
+		$job['message'] = __( 'Downloading backup files', 'eikvakt-backup-manager' );
 
 		if ( Transfer::is_finished( (array) $state['fetch'] ) ) {
 			foreach ( (array) $state['fetch']['targets'] as $target ) {
@@ -314,7 +314,7 @@ final class Restore_Job implements Job_Handler {
 				return [ $job, $state ];
 			}
 
-			$job['message'] = __( 'Decrypting', 'afrit-backup-manager' );
+			$job['message'] = __( 'Decrypting', 'eikvakt-backup-manager' );
 
 			if ( ! $state['decrypt']['state']['done'] ) {
 				return [ $job, $state ];
@@ -355,7 +355,7 @@ final class Restore_Job implements Job_Handler {
 
 		$index      = File_Index::load( self::plain( $state, $index_files[0] ) );
 		$include_wp = ! empty( $job['params']['wp_config'] );
-		$own_plugin = 'content/plugins/' . dirname( AFBM_BASENAME ) . '/';
+		$own_plugin = 'content/plugins/' . dirname( EKBM_BASENAME ) . '/';
 
 		$lists = [];
 		$count = 0;
@@ -499,7 +499,7 @@ final class Restore_Job implements Job_Handler {
 		$state['files']     = $progress;
 		$job['message']     = sprintf(
 			/* translators: 1: files restored, 2: total files */
-			__( 'Restoring files: %1$s of %2$s', 'afrit-backup-manager' ),
+			__( 'Restoring files: %1$s of %2$s', 'eikvakt-backup-manager' ),
 			number_format_i18n( (int) $progress['done'] ),
 			number_format_i18n( (int) $progress['total'] )
 		);
@@ -541,7 +541,7 @@ final class Restore_Job implements Job_Handler {
 				return false;
 			}
 
-			$tmp = $target . '.afbm-' . Util::random_token( 4 );
+			$tmp = $target . '.ekbm-' . Util::random_token( 4 );
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.PHP.NoSilencedErrors.Discouraged -- a non-writable target is reported, not fatal.
 			$out = @fopen( $tmp, 'wb' );
 			if ( false === $out ) {
@@ -585,14 +585,14 @@ final class Restore_Job implements Job_Handler {
 
 		if ( empty( $state['prune']['done'] ) ) {
 			$state['prune'] = File_Scanner::step( (array) $state['prune'], $deadline );
-			$job['message'] = __( 'Looking for files that were not in the backup', 'afrit-backup-manager' );
+			$job['message'] = __( 'Looking for files that were not in the backup', 'eikvakt-backup-manager' );
 			return [ $job, $state ];
 		}
 
 		$manifest   = Catalog::get( (string) $state['backup_id'] );
 		$index      = File_Index::load( self::plain( $state, $manifest->files_of_kind( Manifest::KIND_INDEX )[0] ) );
 		$include_wp = ! empty( $job['params']['wp_config'] );
-		$own_plugin = 'content/plugins/' . dirname( AFBM_BASENAME ) . '/';
+		$own_plugin = 'content/plugins/' . dirname( EKBM_BASENAME ) . '/';
 		$only       = array_map( 'strval', (array) ( $manifest->data['only'] ?? [] ) );
 		$removed    = 0;
 
@@ -656,7 +656,7 @@ final class Restore_Job implements Job_Handler {
 		}
 		$job['message'] = sprintf(
 			/* translators: %s: number of SQL statements */
-			__( 'Importing database: %s statements', 'afrit-backup-manager' ),
+			__( 'Importing database: %s statements', 'eikvakt-backup-manager' ),
 			number_format_i18n( (int) $state['import']['statements'] )
 		);
 
@@ -712,7 +712,7 @@ final class Restore_Job implements Job_Handler {
 		}
 
 		$state['replace'] = $progress;
-		$job['message']   = __( 'Replacing URLs and paths', 'afrit-backup-manager' );
+		$job['message']   = __( 'Replacing URLs and paths', 'eikvakt-backup-manager' );
 
 		if ( (int) $progress['table'] >= count( $progress['tables'] ) ) {
 			$job            = Job_Runner::log( $job, sprintf( 'Search and replace changed %d rows.', $progress['rows'] ) );
@@ -890,7 +890,7 @@ final class Restore_Job implements Job_Handler {
 	 */
 	private function finish( array $job, array $state, Manifest $manifest ): array {
 		$job['status']  = Job_Runner::STATUS_DONE;
-		$job['message'] = __( 'Restore complete.', 'afrit-backup-manager' );
+		$job['message'] = __( 'Restore complete.', 'eikvakt-backup-manager' );
 		$job['result']  = [
 			'backup_id'   => $manifest->id(),
 			'backup_type' => $manifest->type(),
@@ -911,7 +911,7 @@ final class Restore_Job implements Job_Handler {
 		 * @param Manifest             $manifest The restored set.
 		 * @param array<string, mixed> $job      The job.
 		 */
-		do_action( 'afbm_restored', $manifest, $job );
+		do_action( 'ekbm_restored', $manifest, $job );
 
 		return $job;
 	}
@@ -941,7 +941,7 @@ final class Restore_Job implements Job_Handler {
 			return;
 		}
 
-		$like = $wpdb->esc_like( 'afbm_' ) . '%';
+		$like = $wpdb->esc_like( 'ekbm_' ) . '%';
 		$live = Database_Dumper::quote( $wpdb->options );
 		$tmp  = Database_Dumper::quote( $temp );
 

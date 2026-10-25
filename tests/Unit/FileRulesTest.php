@@ -1,9 +1,9 @@
 <?php
 declare( strict_types = 1 );
 
-namespace AfritBackupManager\Tests\Unit;
+namespace EikvaktBackupManager\Tests\Unit;
 
-use AfritBackupManager\File_Rules;
+use EikvaktBackupManager\File_Rules;
 use PHPUnit\Framework\TestCase;
 
 final class FileRulesTest extends TestCase {

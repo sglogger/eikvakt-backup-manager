@@ -16,12 +16,12 @@
  *
  * Free of WordPress: unit-tested on its own.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class File_Index {
 
-	public const HEADER = '#afbm-index 1';
+	public const HEADER = '#ekbm-index 1';
 
 	/**
 	 * @return array{0:string, 1:int, 2:int, 3:string}|null Path, size, mtime, holder.

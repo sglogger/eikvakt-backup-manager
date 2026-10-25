@@ -1,4 +1,4 @@
-# Afrit Backup Manager — developer documentation
+# Eikvakt Backup Manager — developer documentation
 
 For people working on the plugin's code. User-facing documentation is the
 plugin's own screens and `readme.txt`.

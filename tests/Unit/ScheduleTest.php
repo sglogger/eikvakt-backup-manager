@@ -1,9 +1,9 @@
 <?php
 declare( strict_types = 1 );
 
-namespace AfritBackupManager\Tests\Unit;
+namespace EikvaktBackupManager\Tests\Unit;
 
-use AfritBackupManager\Schedule;
+use EikvaktBackupManager\Schedule;
 use PHPUnit\Framework\TestCase;
 
 final class ScheduleTest extends TestCase {

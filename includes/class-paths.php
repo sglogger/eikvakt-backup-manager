@@ -22,12 +22,12 @@
  * Archives are only ever handed out by the authenticated download endpoint
  * in the admin, never by URL.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,13 +35,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Paths {
 
-	public const PROBE_PREFIX = 'afbm-probe-';
+	public const PROBE_PREFIX = 'ekbm-probe-';
 
 	/** Marks a directory as ours. Only such a directory is ever written to or deleted. */
-	public const MARKER = '.afbm-backup-dir';
+	public const MARKER = '.ekbm-backup-dir';
 
 	/** Appears in every protection file we write; anything without it is not ours. */
-	private const SIGNATURE = 'Afrit Backup Manager';
+	private const SIGNATURE = 'Eikvakt Backup Manager';
 
 	/**
 	 * Absolute path of the backup directory, without a trailing slash.
@@ -80,14 +80,14 @@ final class Paths {
 			$key = 'default';
 		}
 
-		$outside = wp_normalize_path( dirname( untrailingslashit( ABSPATH ) ) ) . '/afbm-backups-' . $key;
+		$outside = wp_normalize_path( dirname( untrailingslashit( ABSPATH ) ) ) . '/ekbm-backups-' . $key;
 
 		if ( self::can_use_outside( $outside ) ) {
 			return $outside;
 		}
 
 		$uploads = wp_get_upload_dir();
-		return untrailingslashit( wp_normalize_path( (string) $uploads['basedir'] ) ) . '/afbm-backups-' . $key;
+		return untrailingslashit( wp_normalize_path( (string) $uploads['basedir'] ) ) . '/ekbm-backups-' . $key;
 	}
 
 	/**
@@ -280,16 +280,16 @@ final class Paths {
 	 */
 	public static function protect( string $dir ): void {
 		$files = [
-			'.htaccess'  => "# Afrit Backup Manager: backups must never be served over HTTP.\n"
+			'.htaccess'  => "# Eikvakt Backup Manager: backups must never be served over HTTP.\n"
 				. "<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n"
 				. "<IfModule !mod_authz_core.c>\n\tOrder deny,allow\n\tDeny from all\n</IfModule>\n"
 				. "Options -Indexes\n",
-			'web.config' => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- Afrit Backup Manager: backups must never be served over HTTP. -->\n<configuration>\n\t<system.webServer>\n"
+			'web.config' => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- Eikvakt Backup Manager: backups must never be served over HTTP. -->\n<configuration>\n\t<system.webServer>\n"
 				. "\t\t<authorization>\n\t\t\t<deny users=\"*\" />\n\t\t</authorization>\n"
 				. "\t\t<security>\n\t\t\t<requestFiltering>\n\t\t\t\t<hiddenSegments>\n\t\t\t\t\t<add segment=\".\" />\n\t\t\t\t</hiddenSegments>\n\t\t\t</requestFiltering>\n\t\t</security>\n"
 				. "\t</system.webServer>\n</configuration>\n",
-			'index.php'  => "<?php\n// Afrit Backup Manager: silence is golden.\n",
-			'index.html' => "<!-- Afrit Backup Manager -->\n",
+			'index.php'  => "<?php\n// Eikvakt Backup Manager: silence is golden.\n",
+			'index.html' => "<!-- Eikvakt Backup Manager -->\n",
 		];
 
 		// Files of earlier versions, recognised as ours although unsigned.
@@ -407,7 +407,7 @@ final class Paths {
 	 */
 	private static function probe( string $dir, string $extension ): array {
 		$path  = $dir . '/' . self::PROBE_PREFIX . Util::random_token( 8 ) . '.' . $extension;
-		$token = 'afbm-probe-' . Util::random_token( 16 );
+		$token = 'ekbm-probe-' . Util::random_token( 16 );
 		$url   = self::url_for( $path );
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- tiny probe file, removed below.
@@ -479,7 +479,7 @@ final class Paths {
 	 */
 	public static function nginx_rule(): string {
 		$url  = self::url_for( self::backup_dir() . '/x' );
-		$path = '' !== $url ? (string) wp_parse_url( dirname( $url ), PHP_URL_PATH ) : '/wp-content/uploads/afbm-backups-';
+		$path = '' !== $url ? (string) wp_parse_url( dirname( $url ), PHP_URL_PATH ) : '/wp-content/uploads/ekbm-backups-';
 
 		return sprintf( "location ^~ %s/ {\n    deny all;\n    return 403;\n}", untrailingslashit( $path ) );
 	}

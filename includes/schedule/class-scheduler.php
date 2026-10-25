@@ -8,12 +8,12 @@
  * slot instead of being retried every five minutes, and the dashboard can
  * still say how old the newest good backup is.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -165,20 +165,20 @@ final class Scheduler {
 		switch ( (string) ( $config['frequency'] ?? 'off' ) ) {
 			case 'interval':
 				/* translators: %d: number of hours */
-				return sprintf( _n( 'Every %d hour', 'Every %d hours', (int) $config['interval_hours'], 'afrit-backup-manager' ), (int) $config['interval_hours'] );
+				return sprintf( _n( 'Every %d hour', 'Every %d hours', (int) $config['interval_hours'], 'eikvakt-backup-manager' ), (int) $config['interval_hours'] );
 			case 'daily':
 				/* translators: %s: time of day */
-				return sprintf( __( 'Daily at %s', 'afrit-backup-manager' ), $time );
+				return sprintf( __( 'Daily at %s', 'eikvakt-backup-manager' ), $time );
 			case 'weekly':
 				global $wp_locale;
 				$weekday = (int) ( $config['weekday'] ?? 1 ) % 7;
 				/* translators: 1: weekday name, 2: time of day */
-				return sprintf( __( 'Weekly on %1$s at %2$s', 'afrit-backup-manager' ), $wp_locale->get_weekday( $weekday ), $time );
+				return sprintf( __( 'Weekly on %1$s at %2$s', 'eikvakt-backup-manager' ), $wp_locale->get_weekday( $weekday ), $time );
 			case 'monthly':
 				/* translators: 1: day of month, 2: time of day */
-				return sprintf( __( 'Monthly on day %1$d at %2$s', 'afrit-backup-manager' ), (int) ( $config['monthday'] ?? 1 ), $time );
+				return sprintf( __( 'Monthly on day %1$d at %2$s', 'eikvakt-backup-manager' ), (int) ( $config['monthday'] ?? 1 ), $time );
 		}
 
-		return __( 'Off', 'afrit-backup-manager' );
+		return __( 'Off', 'eikvakt-backup-manager' );
 	}
 }

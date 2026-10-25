@@ -41,27 +41,27 @@ await Promise.all( [ page.waitForNavigation(), page.click( '#wp-submit' ) ] );
 const admin = ( query ) => `${ base }/wp-admin/admin.php?${ query }`;
 
 const shots = [
-	[ '01-dashboard', admin( 'page=afrit-backup-manager' ) ],
-	[ '02-backups', admin( 'page=afrit-backup-manager-backups' ) ],
-	[ '03-restore', admin( `page=afrit-backup-manager-restore&backup=${ process.env.RESTORE_ID || '' }` ) ],
-	[ '04-migration', admin( 'page=afrit-backup-manager-migration' ) ],
-	[ '05-reports', admin( 'page=afrit-backup-manager-reports' ) ],
-	[ '06-report-detail', admin( `page=afrit-backup-manager-reports&run=${ process.env.RUN_ID || 1 }` ) ],
-	[ '07-settings-storage', admin( 'page=afrit-backup-manager-settings&tab=storage' ) ],
-	[ '08-settings-storage-dropbox', admin( 'page=afrit-backup-manager-settings&tab=storage&add=dropbox' ) ],
-	[ '09-settings-schedule', admin( 'page=afrit-backup-manager-settings&tab=schedule' ) ],
-	[ '10-settings-retention', admin( 'page=afrit-backup-manager-settings&tab=retention' ) ],
-	[ '11-settings-security', admin( 'page=afrit-backup-manager-settings&tab=security' ) ],
-	[ '12-settings-general', admin( 'page=afrit-backup-manager-settings&tab=general' ) ],
-	[ '13-settings-database', admin( 'page=afrit-backup-manager-settings&tab=database' ) ],
-	[ '15-settings-files', admin( 'page=afrit-backup-manager-settings&tab=files' ) ],
-	[ '14-settings-encryption', admin( 'page=afrit-backup-manager-settings&tab=encryption' ) ],
+	[ '01-dashboard', admin( 'page=eikvakt-backup-manager' ) ],
+	[ '02-backups', admin( 'page=eikvakt-backup-manager-backups' ) ],
+	[ '03-restore', admin( `page=eikvakt-backup-manager-restore&backup=${ process.env.RESTORE_ID || '' }` ) ],
+	[ '04-migration', admin( 'page=eikvakt-backup-manager-migration' ) ],
+	[ '05-reports', admin( 'page=eikvakt-backup-manager-reports' ) ],
+	[ '06-report-detail', admin( `page=eikvakt-backup-manager-reports&run=${ process.env.RUN_ID || 1 }` ) ],
+	[ '07-settings-storage', admin( 'page=eikvakt-backup-manager-settings&tab=storage' ) ],
+	[ '08-settings-storage-dropbox', admin( 'page=eikvakt-backup-manager-settings&tab=storage&add=dropbox' ) ],
+	[ '09-settings-schedule', admin( 'page=eikvakt-backup-manager-settings&tab=schedule' ) ],
+	[ '10-settings-retention', admin( 'page=eikvakt-backup-manager-settings&tab=retention' ) ],
+	[ '11-settings-security', admin( 'page=eikvakt-backup-manager-settings&tab=security' ) ],
+	[ '12-settings-general', admin( 'page=eikvakt-backup-manager-settings&tab=general' ) ],
+	[ '13-settings-database', admin( 'page=eikvakt-backup-manager-settings&tab=database' ) ],
+	[ '15-settings-files', admin( 'page=eikvakt-backup-manager-settings&tab=files' ) ],
+	[ '14-settings-encryption', admin( 'page=eikvakt-backup-manager-settings&tab=encryption' ) ],
 ];
 
 for ( const [ name, url ] of shots ) {
 	await page.goto( url, { waitUntil: 'networkidle' } );
 	if ( name.endsWith( 'files' ) ) {
-		await page.waitForSelector( '#afbm-tree input[type=checkbox]' );
+		await page.waitForSelector( '#ekbm-tree input[type=checkbox]' );
 		await page.waitForTimeout( 1500 );
 	}
 	// Hide notices that belong to WordPress, not to this plugin.

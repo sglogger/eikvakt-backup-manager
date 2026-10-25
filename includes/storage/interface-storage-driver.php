@@ -10,12 +10,12 @@
  * Errors are thrown as \RuntimeException with a message meant for the
  * administrator; the job engine retries and then reports them.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

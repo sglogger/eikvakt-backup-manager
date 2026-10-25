@@ -1,5 +1,5 @@
 # WP-CLI image plus the PHP FTP extension (with FTPS support), matching the
-# web container, so `wp afbm backup` can upload to the FTP test server.
+# web container, so `wp eikvakt backup` can upload to the FTP test server.
 FROM wordpress:cli-php8.2
 
 USER root

@@ -1,10 +1,10 @@
 <?php
 declare( strict_types = 1 );
 
-namespace AfritBackupManager\Tests\Unit;
+namespace EikvaktBackupManager\Tests\Unit;
 
-use AfritBackupManager\Manifest;
-use AfritBackupManager\Retention_Policy;
+use EikvaktBackupManager\Manifest;
+use EikvaktBackupManager\Retention_Policy;
 use PHPUnit\Framework\TestCase;
 
 final class RetentionPolicyTest extends TestCase {

@@ -11,12 +11,12 @@
  * released by the operating system when the process ends, so a request killed
  * by the host can never leave a stale lock behind.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

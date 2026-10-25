@@ -34,8 +34,8 @@ Build the ZIP and check it on a clean site — the result must be "No errors fou
 ```sh
 ./package-plugin.sh
 # on a throwaway WordPress with the plugin-check plugin:
-wp plugin install dist/afrit-backup-manager-<version>.zip --activate
-wp plugin check afrit-backup-manager
+wp plugin install dist/eikvakt-backup-manager-<version>.zip --activate
+wp plugin check eikvakt-backup-manager
 ```
 
 ## Browser smoke test (Playwright)
@@ -53,7 +53,7 @@ password, unlocks, removes the password.
 
 Run before a release; each line was verified for 1.0.0.
 
-- [ ] `wp afbm backup` — full backup of everything; `unzip -l` shows root/ and content/ paths, dump starts with `-- afbm-dump 1`.
+- [ ] `wp eikvakt backup` — full backup of everything; `unzip -l` shows root/ and content/ paths, dump starts with `-- ekbm-dump 1`.
 - [ ] File chain: `--type=auto` twice with a modified, a new and a deleted file → incremental contains exactly the 2 changed files, `stats.deleted = 1`.
 - [ ] Damage the site (delete a plugin, change files and posts, add junk), restore the incremental with `--delete-extra` and the database → posts, blog name, plugin, file checksums back; junk removed.
 - [ ] Encryption on + SFTP + FTP: one backup lands encrypted on both; a broken destination only causes a warning.
@@ -61,7 +61,7 @@ Run before a release; each line was verified for 1.0.0.
 - [ ] Restore from remote-only encrypted set: wrong passphrase fails cleanly, right one restores.
 - [ ] Migration key from :9190 to :9192 → home is the target URL, prefix `wpt_` works (admin can log in), target keeps its own settings and wp-config.php, no old URL in the page.
 - [ ] `wp plugin install akismet --version=<old> --force; wp plugin update akismet` → partial pre-update backup (plugin + database); restoring it with `--delete-extra` downgrades only that plugin.
-- [ ] `wp afbm keep <old incremental>`, retention set to 1 chain / 1 database / 1 partial, `wp afbm prune` → the marked incremental and its full backup survive, everything else old is gone; deleting the kept set (or its full backup) on the Backups screen is refused.
+- [ ] `wp eikvakt keep <old incremental>`, retention set to 1 chain / 1 database / 1 partial, `wp eikvakt prune` → the marked incremental and its full backup survive, everything else old is gone; deleting the kept set (or its full backup) on the Backups screen is refused.
 - [ ] From the host, the archive, `catalog.json`, the directory and `.work/runner.key` all return 403.
-- [ ] Without login: download URL → 400, `afbm_tick` with a wrong key → 403, `afbm_migrate` with a wrong token (incl. `../` names) → 403, status/upload AJAX → 400.
+- [ ] Without login: download URL → 400, `ekbm_tick` with a wrong key → 403, `ekbm_migrate` with a wrong token (incl. `../` names) → 403, status/upload AJAX → 400.
 - [ ] `debug.log` stays empty while clicking through every screen.

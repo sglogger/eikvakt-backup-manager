@@ -14,7 +14,7 @@
  * file is loaded outside WordPress, so the constant is defined first, along
  * with the handful of WordPress functions the tested code touches.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );

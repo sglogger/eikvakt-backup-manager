@@ -6,12 +6,12 @@
  * protected backup directory and adds it to the catalog. Restoring it is a
  * separate, deliberate step on the Restore screen.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -71,7 +71,7 @@ final class Pull_Job implements Job_Handler {
 	 */
 	private static function call( array $key, array $body, bool $allow_private ): array {
 		return OAuth::http(
-			add_query_arg( 'action', 'afbm_migrate', $key['u'] ),
+			add_query_arg( 'action', 'ekbm_migrate', $key['u'] ),
 			[
 				'method'             => 'POST',
 				'timeout'            => 120,
@@ -141,7 +141,7 @@ final class Pull_Job implements Job_Handler {
 
 		$job['message'] = sprintf(
 			/* translators: 1: bytes downloaded, 2: total bytes */
-			__( 'Downloading from the source site: %1$s of %2$s', 'afrit-backup-manager' ),
+			__( 'Downloading from the source site: %1$s of %2$s', 'eikvakt-backup-manager' ),
 			Util::bytes( (int) $state['bytes'] ),
 			Util::bytes( (int) $state['total'] )
 		);
@@ -159,7 +159,7 @@ final class Pull_Job implements Job_Handler {
 
 			$job['status']   = Job_Runner::STATUS_DONE;
 			$job['progress'] = 100;
-			$job['message']  = __( 'Import complete. The backup can now be restored.', 'afrit-backup-manager' );
+			$job['message']  = __( 'Import complete. The backup can now be restored.', 'eikvakt-backup-manager' );
 			$job['result']   = [
 				'backup_id'   => null !== $last ? $last->id() : '',
 				'backup_type' => null !== $last ? $last->type() : '',

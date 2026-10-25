@@ -6,7 +6,7 @@
  * Lives OUTSIDE the plugin directory (dev/mu-plugins/, mounted only by
  * docker-compose) and is excluded from the release ZIP. It must never ship.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
@@ -16,14 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 add_filter(
-	'afbm_exclude_patterns',
+	'ekbm_exclude_patterns',
 	static function ( array $patterns ): array {
 		if ( 'local' !== wp_get_environment_type() ) {
 			return $patterns;
 		}
 
 		foreach ( [ 'local_wp_core', 'local_wp_target', 'db_data', 'dist', 'vendor', 'node_modules', 'dev', 'screenshots', 'docs', 'tests', '.git' ] as $dir ) {
-			$patterns[] = 'content/plugins/afrit-backup-manager/' . $dir . '/*';
+			$patterns[] = 'content/plugins/eikvakt-backup-manager/' . $dir . '/*';
 		}
 
 		return $patterns;

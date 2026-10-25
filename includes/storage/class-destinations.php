@@ -6,12 +6,12 @@
  * an entry in the destinations option with its credentials sealed by
  * Secret_Cipher. Backups are copied to every enabled destination at once.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,7 +27,7 @@ final class Destinations {
 	public static function types(): array {
 		return [
 			'ftp'      => [
-				'label'   => __( 'FTP / FTPS', 'afrit-backup-manager' ),
+				'label'   => __( 'FTP / FTPS', 'eikvakt-backup-manager' ),
 				'fields'  => [
 					'host'     => 'text',
 					'port'     => 'number',
@@ -42,7 +42,7 @@ final class Destinations {
 				'oauth'   => false,
 			],
 			'sftp'     => [
-				'label'   => __( 'SFTP (SSH)', 'afrit-backup-manager' ),
+				'label'   => __( 'SFTP (SSH)', 'eikvakt-backup-manager' ),
 				'fields'  => [
 					'host'           => 'text',
 					'port'           => 'number',
@@ -57,7 +57,7 @@ final class Destinations {
 				'oauth'   => false,
 			],
 			'dropbox'  => [
-				'label'   => __( 'Dropbox', 'afrit-backup-manager' ),
+				'label'   => __( 'Dropbox', 'eikvakt-backup-manager' ),
 				'fields'  => [
 					'own_app'    => 'checkbox',
 					'app_key'    => 'text',
@@ -68,7 +68,7 @@ final class Destinations {
 				'oauth'   => true,
 			],
 			'onedrive' => [
-				'label'   => __( 'Microsoft OneDrive', 'afrit-backup-manager' ),
+				'label'   => __( 'Microsoft OneDrive', 'eikvakt-backup-manager' ),
 				'fields'  => [
 					'client_id'     => 'text',
 					'client_secret' => 'password',
@@ -83,23 +83,23 @@ final class Destinations {
 
 	public static function field_label( string $field ): string {
 		$labels = [
-			'host'           => __( 'Host', 'afrit-backup-manager' ),
-			'port'           => __( 'Port', 'afrit-backup-manager' ),
-			'username'       => __( 'User name', 'afrit-backup-manager' ),
-			'password'       => __( 'Password', 'afrit-backup-manager' ),
-			'path'           => __( 'Folder', 'afrit-backup-manager' ),
-			'ssl'            => __( 'Use FTPS (TLS, certificate verified)', 'afrit-backup-manager' ),
-			'tls_pin'        => __( 'Pinned TLS key (self-signed servers only)', 'afrit-backup-manager' ),
-			'passive'        => __( 'Passive mode', 'afrit-backup-manager' ),
-			'private_key'    => __( 'Private key (instead of a password)', 'afrit-backup-manager' ),
-			'key_passphrase' => __( 'Key passphrase', 'afrit-backup-manager' ),
-			'fingerprint'    => __( 'Pinned host key fingerprint', 'afrit-backup-manager' ),
-			'own_app'        => __( 'Own Dropbox app', 'afrit-backup-manager' ),
-			'app_key'        => __( 'App key', 'afrit-backup-manager' ),
-			'app_secret'     => __( 'App secret', 'afrit-backup-manager' ),
-			'client_id'      => __( 'Application (client) ID', 'afrit-backup-manager' ),
-			'client_secret'  => __( 'Client secret', 'afrit-backup-manager' ),
-			'tenant'         => __( 'Tenant', 'afrit-backup-manager' ),
+			'host'           => __( 'Host', 'eikvakt-backup-manager' ),
+			'port'           => __( 'Port', 'eikvakt-backup-manager' ),
+			'username'       => __( 'User name', 'eikvakt-backup-manager' ),
+			'password'       => __( 'Password', 'eikvakt-backup-manager' ),
+			'path'           => __( 'Folder', 'eikvakt-backup-manager' ),
+			'ssl'            => __( 'Use FTPS (TLS, certificate verified)', 'eikvakt-backup-manager' ),
+			'tls_pin'        => __( 'Pinned TLS key (self-signed servers only)', 'eikvakt-backup-manager' ),
+			'passive'        => __( 'Passive mode', 'eikvakt-backup-manager' ),
+			'private_key'    => __( 'Private key (instead of a password)', 'eikvakt-backup-manager' ),
+			'key_passphrase' => __( 'Key passphrase', 'eikvakt-backup-manager' ),
+			'fingerprint'    => __( 'Pinned host key fingerprint', 'eikvakt-backup-manager' ),
+			'own_app'        => __( 'Own Dropbox app', 'eikvakt-backup-manager' ),
+			'app_key'        => __( 'App key', 'eikvakt-backup-manager' ),
+			'app_secret'     => __( 'App secret', 'eikvakt-backup-manager' ),
+			'client_id'      => __( 'Application (client) ID', 'eikvakt-backup-manager' ),
+			'client_secret'  => __( 'Client secret', 'eikvakt-backup-manager' ),
+			'tenant'         => __( 'Tenant', 'eikvakt-backup-manager' ),
 		];
 		return $labels[ $field ] ?? $field;
 	}
@@ -147,7 +147,7 @@ final class Destinations {
 		$all = self::all();
 		unset( $all[ $id ] );
 		update_option( Installer::OPTION_DESTINATIONS, array_values( $all ), false );
-		delete_transient( 'afbm_token_' . $id );
+		delete_transient( 'ekbm_token_' . $id );
 	}
 
 	/**
@@ -155,7 +155,7 @@ final class Destinations {
 	 */
 	public static function name( string $id ): string {
 		if ( Storage_Local::ID === $id ) {
-			return __( 'This server', 'afrit-backup-manager' );
+			return __( 'This server', 'eikvakt-backup-manager' );
 		}
 		$destination = self::get( $id );
 		return null === $destination ? $id : (string) $destination['name'];
@@ -191,7 +191,7 @@ final class Destinations {
 		$destination = self::get( $id );
 		if ( null === $destination ) {
 			/* translators: %s: destination id */
-			throw new \RuntimeException( esc_html( sprintf( __( 'Unknown destination %s.', 'afrit-backup-manager' ), $id ) ) );
+			throw new \RuntimeException( esc_html( sprintf( __( 'Unknown destination %s.', 'eikvakt-backup-manager' ), $id ) ) );
 		}
 
 		$config = self::open_config( $destination );
@@ -217,13 +217,13 @@ final class Destinations {
 	 */
 	public static function test( string $id ) {
 		if ( Storage_Local::ID !== $id && Util::is_playground() ) {
-			return new \WP_Error( 'afbm_playground', Util::playground_notice() );
+			return new \WP_Error( 'ekbm_playground', Util::playground_notice() );
 		}
 
 		try {
 			$driver = self::driver( $id );
 		} catch ( \RuntimeException $e ) {
-			return new \WP_Error( 'afbm_destination', Util::message( $e ) );
+			return new \WP_Error( 'ekbm_destination', Util::message( $e ) );
 		}
 
 		$result = $driver->test();

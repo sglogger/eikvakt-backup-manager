@@ -1,9 +1,9 @@
 <?php
 declare( strict_types = 1 );
 
-namespace AfritBackupManager\Tests\Unit;
+namespace EikvaktBackupManager\Tests\Unit;
 
-use AfritBackupManager\Sql_Importer;
+use EikvaktBackupManager\Sql_Importer;
 use PHPUnit\Framework\TestCase;
 
 final class SqlImporterTest extends TestCase {
@@ -56,7 +56,7 @@ final class SqlImporterTest extends TestCase {
 	}
 
 	public function test_header_lines_are_recognised(): void {
-		foreach ( [ '-- afbm-dump 1 prefix=wp_', '/*!40101 SET NAMES utf8mb4 */;', 'SET FOREIGN_KEY_CHECKS=0;', "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';", '' ] as $line ) {
+		foreach ( [ '-- ekbm-dump 1 prefix=wp_', '/*!40101 SET NAMES utf8mb4 */;', 'SET FOREIGN_KEY_CHECKS=0;', "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';", '' ] as $line ) {
 			$this->assertTrue( Sql_Importer::is_header_line( $line ), $line );
 		}
 	}

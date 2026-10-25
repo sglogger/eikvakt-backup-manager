@@ -1,8 +1,8 @@
-# Privacy Policy — Afrit Backup Manager
+# Privacy Policy — Eikvakt Backup Manager
 
 _Last updated: 19 October 2026_
 
-Afrit Backup Manager is a free, open-source WordPress plugin (GPL-2.0-or-later)
+Eikvakt Backup Manager is a free, open-source WordPress plugin (GPL-2.0-or-later)
 by Steven Glogger. This policy explains what the plugin does with data. The
 short version: **the author collects nothing.** The plugin runs entirely on
 your own WordPress server, and backups go only to the places you choose.
@@ -19,7 +19,7 @@ similar laws. This policy describes how the plugin handles that data on your
 behalf.
 
 Author: Steven Glogger — https://www.glogger.ch — questions and reports:
-https://github.com/sglogger/afrit-backup-manager/issues
+https://github.com/sglogger/eikvakt-backup-manager/issues
 
 ## 2. What the author receives
 
@@ -77,10 +77,10 @@ Additionally:
 
 ## 5. Dropbox in detail
 
-When you connect Dropbox, you authorise the app **"Afrit Backup Manager"** (or
+When you connect Dropbox, you authorise the app **"Eikvakt Backup Manager"** (or
 your own Dropbox app, if you choose that option):
 
-- **Access is limited to one folder**: `Apps/Afrit Backup Manager` in your
+- **Access is limited to one folder**: `Apps/Eikvakt Backup Manager` in your
   Dropbox. The app cannot see or change any other file in your Dropbox.
 - **Permissions requested**: `files.metadata.read`, `files.metadata.write`,
   `files.content.read`, `files.content.write` — to upload backups, list them,
@@ -91,7 +91,7 @@ your own Dropbox app, if you choose that option):
   WordPress server, encrypted.
 - **Nothing is shared with the author**: the app key in the plugin is public
   and only identifies the app; it gives no access to anyone's data.
-- **Revoking access**: Dropbox → Settings → Apps (Connected apps) → Afrit
+- **Revoking access**: Dropbox → Settings → Apps (Connected apps) → Eikvakt
   Backup Manager → Disconnect; and/or remove the destination in the plugin.
   Backups already stored in the app folder stay there until you delete them.
 
@@ -127,4 +127,4 @@ Because backups contain the personal data of your site, please consider:
 ## 8. Changes
 
 Changes to this policy are published in this file in the plugin's repository:
-https://github.com/sglogger/afrit-backup-manager/blob/main/PRIVACY.md
+https://github.com/sglogger/eikvakt-backup-manager/blob/main/PRIVACY.md

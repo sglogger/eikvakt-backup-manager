@@ -6,12 +6,12 @@
  * the Schedule tab can never clobber a value on the Retention tab, and every
  * option can be inspected on its own with `wp option get`.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -148,7 +148,7 @@ final class Settings {
 		 *
 		 * @param int $budget Seconds, clamped to 5–300.
 		 */
-		$budget = (int) apply_filters( 'afbm_time_budget', $budget );
+		$budget = (int) apply_filters( 'ekbm_time_budget', $budget );
 
 		return max( 5, min( 300, $budget ) );
 	}
@@ -196,6 +196,6 @@ final class Settings {
 		 *
 		 * @param string[] $patterns Patterns.
 		 */
-		return (array) apply_filters( 'afbm_exclude_patterns', array_merge( $builtin, $lines ) );
+		return (array) apply_filters( 'ekbm_exclude_patterns', array_merge( $builtin, $lines ) );
 	}
 }

@@ -1,9 +1,9 @@
 <?php
 declare( strict_types = 1 );
 
-namespace AfritBackupManager\Tests\Unit;
+namespace EikvaktBackupManager\Tests\Unit;
 
-use AfritBackupManager\File_Index;
+use EikvaktBackupManager\File_Index;
 use PHPUnit\Framework\TestCase;
 
 final class FileIndexTest extends TestCase {
@@ -11,7 +11,7 @@ final class FileIndexTest extends TestCase {
 	private string $dir;
 
 	protected function setUp(): void {
-		$this->dir = sys_get_temp_dir() . '/afbm-index-' . bin2hex( random_bytes( 4 ) );
+		$this->dir = sys_get_temp_dir() . '/ekbm-index-' . bin2hex( random_bytes( 4 ) );
 		mkdir( $this->dir );
 	}
 

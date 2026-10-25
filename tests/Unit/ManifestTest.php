@@ -1,9 +1,9 @@
 <?php
 declare( strict_types = 1 );
 
-namespace AfritBackupManager\Tests\Unit;
+namespace EikvaktBackupManager\Tests\Unit;
 
-use AfritBackupManager\Manifest;
+use EikvaktBackupManager\Manifest;
 use PHPUnit\Framework\TestCase;
 
 final class ManifestTest extends TestCase {

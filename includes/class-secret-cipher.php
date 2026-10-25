@@ -17,12 +17,12 @@
  *     values the target cannot open, for the same reason. That is intended:
  *     credentials do not travel with a copy of the database.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,7 +33,7 @@ final class Secret_Cipher {
 	private const CIPHER = 'aes-256-gcm';
 
 	/** Marks the format, so a future scheme can be told apart from this one. */
-	private const PREFIX = 'afbm1:';
+	private const PREFIX = 'ekbm1:';
 
 	private const IV_BYTES  = 12;
 	private const TAG_BYTES = 16;
@@ -104,6 +104,6 @@ final class Secret_Cipher {
 	}
 
 	private static function key(): string {
-		return hash_hkdf( 'sha256', wp_salt( 'secure_auth' ), 32, 'afbm-stored-secret' );
+		return hash_hkdf( 'sha256', wp_salt( 'secure_auth' ), 32, 'ekbm-stored-secret' );
 	}
 }

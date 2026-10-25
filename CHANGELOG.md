@@ -5,6 +5,20 @@ All notable changes to this project are documented here. The format follows
 [Semantic Versioning](https://semver.org/). Mirror every entry into
 `readme.txt` → `== Changelog ==`.
 
+## [1.0.4] — 2026-10-25
+
+The plugin is renamed from Afrit Backup Manager to **Eikvakt Backup Manager**
+(slug `eikvakt-backup-manager`), following the WordPress.org review: "Afrit"
+is the name of an existing Icelandic backup service. *Eikvakt* joins the
+Norwegian *eik* (oak) and *vakt* (watch, guard) — the oak guard.
+
+### Changed
+- New name, slug, text domain, namespace (`EikvaktBackupManager`), prefix `ekbm_`/`EKBM_` (options, tables, hooks, constants, CSS classes, backup file names), WP-CLI command `wp eikvakt`, migration key prefix `EKBM1-`. Settings, backups and migration keys of the earlier name are not carried over.
+- SFTP: phpseclib 3.0 → 4.0 (namespace `phpseclib4`; errors are exceptions now).
+
+### Security
+- Settings forms: `Admin::request()` sanitises the whole submission right after the capability and nonce checks; only passwords, passphrases, search/replace pairs and file rules are passed on as entered.
+
 ## [1.0.3] — 2026-10-19
 
 ### Removed

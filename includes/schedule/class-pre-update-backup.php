@@ -14,12 +14,12 @@
  * backup destination was unreachable would be the worse outcome. The failure
  * is reported like any other.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -58,7 +58,7 @@ final class Pre_Update_Backup {
 		 * @param object $upgrader   Upgrader instance.
 		 * @param mixed  $hook_extra Upgrade details.
 		 */
-		if ( ! apply_filters( 'afbm_backup_before_update', true, $upgrader, $hook_extra ) ) {
+		if ( ! apply_filters( 'ekbm_backup_before_update', true, $upgrader, $hook_extra ) ) {
 			return $reply;
 		}
 
@@ -68,14 +68,14 @@ final class Pre_Update_Backup {
 		}
 
 		$components = [ $component ];
-		if ( ! empty( $settings['database'] ) && ! get_transient( 'afbm_pre_update_db' ) ) {
+		if ( ! empty( $settings['database'] ) && ! get_transient( 'ekbm_pre_update_db' ) ) {
 			$components[] = Components::DATABASE;
-			set_transient( 'afbm_pre_update_db', 1, self::DB_REUSE );
+			set_transient( 'ekbm_pre_update_db', 1, self::DB_REUSE );
 		}
 
 		if ( isset( $upgrader->skin ) && method_exists( $upgrader->skin, 'feedback' ) ) {
 			/* translators: %s: what is being backed up */
-			$upgrader->skin->feedback( sprintf( __( 'Backing up %s before the update&#8230;', 'afrit-backup-manager' ), $label ) );
+			$upgrader->skin->feedback( sprintf( __( 'Backing up %s before the update&#8230;', 'eikvakt-backup-manager' ), $label ) );
 		}
 
 		try {
@@ -86,7 +86,7 @@ final class Pre_Update_Backup {
 					'type'       => 'partial',
 					'only'       => $only,
 					/* translators: %s: plugin, theme or "WordPress" */
-					'label'      => sprintf( __( 'Before updating %s', 'afrit-backup-manager' ), $label ),
+					'label'      => sprintf( __( 'Before updating %s', 'eikvakt-backup-manager' ), $label ),
 				],
 				'pre-update'
 			);
@@ -94,8 +94,8 @@ final class Pre_Update_Backup {
 			if ( isset( $upgrader->skin ) && method_exists( $upgrader->skin, 'feedback' ) ) {
 				$upgrader->skin->feedback(
 					Job_Runner::STATUS_DONE === $job['status']
-						? __( 'Backup complete.', 'afrit-backup-manager' )
-						: __( 'The backup failed; the update continues. See Backup Manager → Reports.', 'afrit-backup-manager' )
+						? __( 'Backup complete.', 'eikvakt-backup-manager' )
+						: __( 'The backup failed; the update continues. See Backup Manager → Reports.', 'eikvakt-backup-manager' )
 				);
 			}
 		} catch ( \Throwable $e ) {

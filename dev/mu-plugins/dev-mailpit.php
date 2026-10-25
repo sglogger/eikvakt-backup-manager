@@ -6,7 +6,7 @@
  * This file lives OUTSIDE the plugin directory (dev/mu-plugins/, mounted only
  * by docker-compose) and is excluded from the release ZIP. It must never ship.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );

@@ -2,185 +2,185 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Afrit Backup Manager 1.0.1\n"
-"Report-Msgid-Bugs-To: https://github.com/sglogger/afrit-backup-manager/issues\n"
+"Project-Id-Version: Eikvakt Backup Manager 1.0.4\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/eikvakt-backup-manager\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-19T15:01:25+00:00\n"
+"POT-Creation-Date: 2026-10-25T14:18:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: afrit-backup-manager\n"
+"X-Domain: eikvakt-backup-manager\n"
 
 #. Plugin Name of the plugin
-#: afrit-backup-manager.php
-msgid "Afrit Backup Manager"
+#: eikvakt-backup-manager.php
+msgid "Eikvakt Backup Manager"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: afrit-backup-manager.php
-msgid "https://github.com/sglogger/afrit-backup-manager"
+#: eikvakt-backup-manager.php
+msgid "https://github.com/sglogger/eikvakt-backup-manager"
 msgstr ""
 
 #. Description of the plugin
-#: afrit-backup-manager.php
-msgid "Backups, restores and migrations for the whole WordPress installation (\"afrit\" is Icelandic for \"copy\"). Incremental file backups, selectable database tables, encryption, scheduling, retention rules and simultaneous upload to this server, FTP, SFTP, Dropbox and OneDrive. Restore files, database, plugins or themes separately, or move the site to a new domain. There is no PRO version. All free."
+#: eikvakt-backup-manager.php
+msgid "Backups, restores and migrations for the whole WordPress installation (\"Eikvakt\" is Norwegian for \"oak guard\"). Incremental file backups, selectable database tables, encryption, scheduling, retention rules and simultaneous upload to this server, FTP, SFTP, Dropbox and OneDrive. Restore files, database, plugins or themes separately, or move the site to a new domain. There is no PRO version. All free."
 msgstr ""
 
 #. Author of the plugin
-#: afrit-backup-manager.php
+#: eikvakt-backup-manager.php
 msgid "Steven Glogger"
 msgstr ""
 
 #. Author URI of the plugin
-#: afrit-backup-manager.php
+#: eikvakt-backup-manager.php
 msgid "https://www.glogger.ch"
 msgstr ""
 
-#: admin/class-admin-actions.php:90
+#: admin/class-admin-actions.php:91
 msgid "Migration package"
 msgstr ""
 
-#: admin/class-admin-actions.php:233
-msgid "This is a test message from Afrit Backup Manager."
+#: admin/class-admin-actions.php:234
+msgid "This is a test message from Eikvakt Backup Manager."
 msgstr ""
 
-#: admin/class-admin-actions.php:322
+#: admin/class-admin-actions.php:323
 #: includes/report/class-run-repository.php:217
 msgid "Before restore"
 msgstr ""
 
-#: admin/class-admin.php:65
-#: admin/class-admin.php:66
+#: admin/class-admin.php:71
+#: admin/class-admin.php:72
 #: admin/views/page-dashboard.php:47
 msgid "Backup Manager"
 msgstr ""
 
-#: admin/class-admin.php:75
-#: admin/class-admin.php:106
+#: admin/class-admin.php:81
+#: admin/class-admin.php:112
 msgid "Dashboard"
 msgstr ""
 
-#: admin/class-admin.php:76
+#: admin/class-admin.php:82
 #: admin/views/page-backups.php:20
 #: admin/views/page-restore.php:24
 msgid "Backups"
 msgstr ""
 
-#: admin/class-admin.php:77
+#: admin/class-admin.php:83
 #: admin/views/page-migration.php:31
 #: includes/report/class-run-repository.php:215
 msgid "Migration"
 msgstr ""
 
-#: admin/class-admin.php:78
+#: admin/class-admin.php:84
 #: admin/views/page-reports.php:21
 msgid "Reports"
 msgstr ""
 
 #. translators: %d: days
-#: admin/class-admin.php:79
+#: admin/class-admin.php:85
 #: admin/views/page-settings.php:29
 #: admin/views/settings/tab-storage.php:107
 msgid "Settings"
 msgstr ""
 
-#: admin/class-admin.php:88
+#: admin/class-admin.php:94
 #: admin/class-backups-list-table.php:222
 #: admin/views/page-restore.php:21
 #: includes/report/class-run-repository.php:197
 msgid "Restore"
 msgstr ""
 
-#: admin/class-admin.php:135
+#: admin/class-admin.php:141
 #: admin/views/page-dashboard.php:69
 #: includes/report/class-run-repository.php:165
 msgid "Running"
 msgstr ""
 
-#: admin/class-admin.php:136
+#: admin/class-admin.php:142
 msgid "Queued"
 msgstr ""
 
-#: admin/class-admin.php:137
+#: admin/class-admin.php:143
 msgid "Finished. Reloading…"
 msgstr ""
 
-#: admin/class-admin.php:138
+#: admin/class-admin.php:144
 msgid "The status could not be read. If a database restore just finished, log in again."
 msgstr ""
 
 #. translators: 1: file name, 2: percentage
-#: admin/class-admin.php:140
+#: admin/class-admin.php:146
 #, php-format
 msgid "Uploading %1$s: %2$s%%"
 msgstr ""
 
-#: admin/class-admin.php:141
+#: admin/class-admin.php:147
 msgid "Upload complete. Reloading…"
 msgstr ""
 
 #. translators: %s: error message
-#: admin/class-admin.php:143
+#: admin/class-admin.php:149
 #, php-format
 msgid "Upload failed: %s"
 msgstr ""
 
-#: admin/class-admin.php:144
+#: admin/class-admin.php:150
 msgid "Delete this backup from every location? This cannot be undone."
 msgstr ""
 
-#: admin/class-admin.php:145
+#: admin/class-admin.php:151
 msgid "Restore now? The selected parts of this site will be overwritten."
 msgstr ""
 
-#: admin/class-admin.php:146
+#: admin/class-admin.php:152
 msgid "Remove this destination? Backups already stored there are not deleted."
 msgstr ""
 
-#: admin/class-admin.php:147
+#: admin/class-admin.php:153
 msgid "Copied"
 msgstr ""
 
-#: admin/class-admin.php:148
+#: admin/class-admin.php:154
 msgid "The folders could not be loaded."
 msgstr ""
 
-#: admin/class-admin.php:149
+#: admin/class-admin.php:155
 msgid "Only the first 500 folders are shown."
 msgstr ""
 
-#: admin/class-admin.php:150
+#: admin/class-admin.php:156
 #: admin/views/settings/tab-files.php:31
 msgid "rule"
 msgstr ""
 
-#: admin/class-admin.php:151
+#: admin/class-admin.php:157
 #: admin/views/settings/tab-files.php:32
 msgid "default"
 msgstr ""
 
-#: admin/class-admin.php:152
+#: admin/class-admin.php:158
 msgid "Reset to inherited"
 msgstr ""
 
-#: admin/class-admin.php:153
+#: admin/class-admin.php:159
 #: admin/views/settings/tab-files.php:29
 msgid "included"
 msgstr ""
 
-#: admin/class-admin.php:154
+#: admin/class-admin.php:160
 #: admin/views/settings/tab-files.php:30
 msgid "excluded"
 msgstr ""
 
-#: admin/class-admin.php:155
+#: admin/class-admin.php:161
 msgid "No folder rules yet: everything in the selected parts is backed up, except the folders skipped by default."
 msgstr ""
 
-#: admin/class-admin.php:156
+#: admin/class-admin.php:162
 #: admin/views/page-restore.php:105
 #: admin/views/settings/tab-security.php:85
 #: admin/views/settings/tab-storage.php:137
@@ -188,224 +188,224 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: admin/class-admin.php:157
+#: admin/class-admin.php:163
 msgid "Show subfolders"
 msgstr ""
 
-#: admin/class-admin.php:197
+#: admin/class-admin.php:202
 msgid "Dismiss until the next test"
 msgstr ""
 
-#: admin/class-admin.php:202
+#: admin/class-admin.php:207
 msgid "Backup Manager:"
 msgstr ""
 
-#: admin/class-admin.php:203
+#: admin/class-admin.php:208
 msgid "your backup files can be downloaded over the internet by anyone who knows their address."
 msgstr ""
 
-#: admin/class-admin.php:205
+#: admin/class-admin.php:210
 msgid "Fix this now"
 msgstr ""
 
-#: admin/class-admin.php:216
+#: admin/class-admin.php:221
 msgid "The PHP zip extension (ZipArchive) is missing. File backups cannot run until your host enables it."
 msgstr ""
 
-#: admin/class-admin.php:220
+#: admin/class-admin.php:225
 msgid "This is a multisite network. Backups cover the whole installation; restoring single sites of a network is not supported."
 msgstr ""
 
-#: admin/class-admin.php:299
-#: admin/class-admin.php:418
-#: admin/class-admin.php:455
+#: admin/class-admin.php:304
+#: admin/class-admin.php:470
+#: admin/class-admin.php:507
 #: includes/access/class-password-gate.php:136
 #: includes/storage/class-oauth.php:134
 msgid "You do not have permission to do this."
 msgstr ""
 
-#: admin/class-admin.php:305
-#: admin/class-admin.php:466
+#: admin/class-admin.php:310
+#: admin/class-admin.php:518
 msgid "Backup Manager is locked. Enter its password first."
 msgstr ""
 
-#: admin/class-admin.php:347
+#: admin/class-admin.php:399
 msgid "Settings saved."
 msgstr ""
 
-#: admin/class-admin.php:348
+#: admin/class-admin.php:400
 msgid "All set. Your first backup is running now; scheduled backups take over from tonight."
 msgstr ""
 
-#: admin/class-admin.php:349
+#: admin/class-admin.php:401
 msgid "Backup started. You can leave this page; it continues in the background."
 msgstr ""
 
-#: admin/class-admin.php:350
+#: admin/class-admin.php:402
 msgid "Restore started. Keep this page open to follow it."
 msgstr ""
 
-#: admin/class-admin.php:351
+#: admin/class-admin.php:403
 msgid "Import started. When it has finished, the backup appears in the list and can be restored."
 msgstr ""
 
-#: admin/class-admin.php:352
+#: admin/class-admin.php:404
 msgid "The running job will stop at its next step."
 msgstr ""
 
-#: admin/class-admin.php:353
+#: admin/class-admin.php:405
 msgid "Backup deleted."
 msgstr ""
 
-#: admin/class-admin.php:354
+#: admin/class-admin.php:406
 msgid "Marked as keep. Automatic retention will never delete this backup or the backups it depends on."
 msgstr ""
 
-#: admin/class-admin.php:355
+#: admin/class-admin.php:407
 msgid "Keep mark removed. The backup is subject to the retention rules again."
 msgstr ""
 
-#: admin/class-admin.php:356
+#: admin/class-admin.php:408
 msgid "This backup, or an incremental backup that depends on it, is marked as keep. Remove the mark first."
 msgstr ""
 
-#: admin/class-admin.php:357
+#: admin/class-admin.php:409
 msgid "The backup could not be deleted from every location. It stays listed for the remaining copies."
 msgstr ""
 
-#: admin/class-admin.php:358
+#: admin/class-admin.php:410
 msgid "The backup list has been rebuilt from all locations."
 msgstr ""
 
-#: admin/class-admin.php:359
+#: admin/class-admin.php:411
 msgid "Another job is already running. Wait for it to finish."
 msgstr ""
 
-#: admin/class-admin.php:360
+#: admin/class-admin.php:412
 msgid "Nothing was selected."
 msgstr ""
 
-#: admin/class-admin.php:361
+#: admin/class-admin.php:413
 msgid "The request was not valid."
 msgstr ""
 
-#: admin/class-admin.php:362
+#: admin/class-admin.php:414
 msgid "The passphrase is wrong."
 msgstr ""
 
-#: admin/class-admin.php:363
+#: admin/class-admin.php:415
 msgid "The passphrase must have at least 12 characters, and both fields must match."
 msgstr ""
 
-#: admin/class-admin.php:364
+#: admin/class-admin.php:416
 msgid "Destination saved."
 msgstr ""
 
-#: admin/class-admin.php:365
+#: admin/class-admin.php:417
 msgid "Destination removed. Backups already stored there were not deleted."
 msgstr ""
 
-#: admin/class-admin.php:366
+#: admin/class-admin.php:418
 msgid "Connection test passed: the destination is reachable and writable."
 msgstr ""
 
-#: admin/class-admin.php:367
+#: admin/class-admin.php:419
 msgid "Connection test failed."
 msgstr ""
 
-#: admin/class-admin.php:368
+#: admin/class-admin.php:420
 msgid "Connected. The destination is ready to use."
 msgstr ""
 
-#: admin/class-admin.php:369
+#: admin/class-admin.php:421
 msgid "The connection could not be completed. A code is valid only once and for a few minutes — press \"Connect\" again for a new one. With your own app, also check its credentials and redirect URI."
 msgstr ""
 
-#: admin/class-admin.php:370
+#: admin/class-admin.php:422
 msgid "The test e-mail was accepted for delivery."
 msgstr ""
 
-#: admin/class-admin.php:371
+#: admin/class-admin.php:423
 msgid "WordPress could not send the e-mail. Check the site's mail configuration."
 msgstr ""
 
-#: admin/class-admin.php:372
+#: admin/class-admin.php:424
 msgid "The backup directory has been tested."
 msgstr ""
 
-#: admin/class-admin.php:373
+#: admin/class-admin.php:425
 msgid "That backup directory could not be created or is not writable. The previous one is still in use."
 msgstr ""
 
-#: admin/class-admin.php:374
+#: admin/class-admin.php:426
 msgid "That folder cannot hold backups: it is WordPress itself, wp-content, uploads, plugins or themes, a parent of one of them, or inside code folders. Choose a separate folder, ideally outside the web root. The previous one is still in use."
 msgstr ""
 
-#: admin/class-admin.php:375
+#: admin/class-admin.php:427
 msgid "That folder already contains other files. Choose a new or empty folder used only for backups. The previous one is still in use."
 msgstr ""
 
-#: admin/class-admin.php:376
+#: admin/class-admin.php:428
 msgid "The Backup Manager password is set."
 msgstr ""
 
-#: admin/class-admin.php:377
+#: admin/class-admin.php:429
 msgid "The Backup Manager password has been removed."
 msgstr ""
 
-#: admin/class-admin.php:378
+#: admin/class-admin.php:430
 msgid "The current password is wrong."
 msgstr ""
 
-#: admin/class-admin.php:379
+#: admin/class-admin.php:431
 msgid "The password must have at least 10 characters, and both fields must match."
 msgstr ""
 
-#: admin/class-admin.php:380
+#: admin/class-admin.php:432
 msgid "Wrong password."
 msgstr ""
 
-#: admin/class-admin.php:381
+#: admin/class-admin.php:433
 msgid "Too many wrong passwords. Try again in 15 minutes."
 msgstr ""
 
-#: admin/class-admin.php:382
+#: admin/class-admin.php:434
 msgid "Migration key created. Copy it now; it is shown only once."
 msgstr ""
 
-#: admin/class-admin.php:383
+#: admin/class-admin.php:435
 msgid "A migration key needs a backup whose files are stored on this server."
 msgstr ""
 
-#: admin/class-admin.php:384
+#: admin/class-admin.php:436
 msgid "That is not a valid migration key."
 msgstr ""
 
-#: admin/class-admin.php:385
+#: admin/class-admin.php:437
 msgid "All migration keys have been revoked."
 msgstr ""
 
-#: admin/class-admin.php:471
+#: admin/class-admin.php:523
 msgid "Unknown file."
 msgstr ""
 
-#: admin/class-admin.php:476
+#: admin/class-admin.php:528
 msgid "This file is not stored on this server. Download it from the remote destination, or restore from there directly."
 msgstr ""
 
-#: admin/class-admin.php:505
+#: admin/class-admin.php:557
 msgid "Full"
 msgstr ""
 
-#: admin/class-admin.php:507
+#: admin/class-admin.php:559
 msgid "Incremental"
 msgstr ""
 
-#: admin/class-admin.php:509
+#: admin/class-admin.php:561
 msgid "Partial"
 msgstr ""
 
-#: admin/class-admin.php:511
+#: admin/class-admin.php:563
 #: admin/views/page-settings.php:22
 #: includes/backup/class-components.php:104
 msgid "Database"
@@ -416,7 +416,7 @@ msgid "WordPress directory"
 msgstr ""
 
 #: admin/class-ajax.php:165
-msgid "This is not a file of an Afrit backup set."
+msgid "This is not a file of an Eikvakt backup set."
 msgstr ""
 
 #: admin/class-ajax.php:171
@@ -760,7 +760,7 @@ msgid "All reports"
 msgstr ""
 
 #: admin/views/page-migration.php:33
-msgid "Move or copy this site to a new domain or host — completely, or only selected parts such as the uploads or the database. Install Afrit Backup Manager on the target site, then follow the steps below."
+msgid "Move or copy this site to a new domain or host — completely, or only selected parts such as the uploads or the database. Install Eikvakt Backup Manager on the target site, then follow the steps below."
 msgstr ""
 
 #: admin/views/page-migration.php:37
@@ -1496,7 +1496,7 @@ msgid "Remove the password"
 msgstr ""
 
 #: admin/views/settings/tab-security.php:90
-msgid "Forgot it? Add <code>define( 'AFBM_DISABLE_PASSWORD', true );</code> to wp-config.php, set a new password here, then remove the line again."
+msgid "Forgot it? Add <code>define( 'EKBM_DISABLE_PASSWORD', true );</code> to wp-config.php, set a new password here, then remove the line again."
 msgstr ""
 
 #: admin/views/settings/tab-storage.php:47
@@ -1524,7 +1524,7 @@ msgid "Open Dropbox"
 msgstr ""
 
 #: admin/views/settings/tab-storage.php:69
-msgid "Sign in if asked and press \"Allow\". Afrit Backup Manager only gets access to its own folder (Apps/Afrit Backup Manager), nothing else in your Dropbox."
+msgid "Sign in if asked and press \"Allow\". Eikvakt Backup Manager only gets access to its own folder (Apps/Eikvakt Backup Manager), nothing else in your Dropbox."
 msgstr ""
 
 #: admin/views/settings/tab-storage.php:71
@@ -1628,7 +1628,7 @@ msgid "Paste the code Dropbox shows. Done."
 msgstr ""
 
 #: admin/views/settings/tab-storage.php:180
-msgid "No Dropbox app of your own is needed: Afrit Backup Manager appears under \"Connected apps\" in your Dropbox and can only access its own folder Apps/Afrit Backup Manager."
+msgid "No Dropbox app of your own is needed: Eikvakt Backup Manager appears under \"Connected apps\" in your Dropbox and can only access its own folder Apps/Eikvakt Backup Manager."
 msgstr ""
 
 #: admin/views/settings/tab-storage.php:183
@@ -1816,7 +1816,7 @@ msgid "Uploads"
 msgstr ""
 
 #: includes/class-installer.php:101
-msgid "Every five minutes (Afrit Backup Manager)"
+msgid "Every five minutes (Eikvakt Backup Manager)"
 msgstr ""
 
 #: includes/class-util.php:128
@@ -2137,14 +2137,14 @@ msgstr ""
 msgid "The SFTP server rejected the login."
 msgstr ""
 
-#: includes/storage/class-storage-sftp.php:133
+#: includes/storage/class-storage-sftp.php:135
 msgid "Connected, but the folder is not writable."
 msgstr ""
 
-#: includes/storage/class-storage-sftp.php:168
+#: includes/storage/class-storage-sftp.php:172
 msgid "The SFTP upload failed."
 msgstr ""
 
-#: includes/storage/class-storage-sftp.php:197
+#: includes/storage/class-storage-sftp.php:205
 msgid "The SFTP download failed."
 msgstr ""

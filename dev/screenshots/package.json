@@ -1,5 +1,5 @@
 {
-	"name": "afrit-backup-manager-dev-screenshots",
+	"name": "eikvakt-backup-manager-dev-screenshots",
 	"private": true,
 	"description": "Development tooling only: renders the plugin icons and captures the documentation screenshots. Never shipped.",
 	"type": "module",

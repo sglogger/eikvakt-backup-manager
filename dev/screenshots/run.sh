@@ -40,9 +40,9 @@ playwright "$IMAGE" node render-icons.mjs
 wp() { docker compose exec -T wpcli wp "$@"; }
 
 # Ids for the restore screen and a report detail with a full log.
-RESTORE_ID="$( wp afbm list --format=csv | awk -F, 'NR>1 && /incremental/ {print $1; exit}' )"
-[ -n "$RESTORE_ID" ] || RESTORE_ID="$( wp afbm list --format=csv | awk -F, 'NR==2 {print $1}' )"
-RUN_ID="$( wp db query "SELECT id FROM $(wp db prefix)afbm_runs WHERE kind='backup' AND status='success' ORDER BY id DESC LIMIT 1" --skip-column-names | tr -d '\r' )"
+RESTORE_ID="$( wp eikvakt list --format=csv | awk -F, 'NR>1 && /incremental/ {print $1; exit}' )"
+[ -n "$RESTORE_ID" ] || RESTORE_ID="$( wp eikvakt list --format=csv | awk -F, 'NR==2 {print $1}' )"
+RUN_ID="$( wp db query "SELECT id FROM $(wp db prefix)ekbm_runs WHERE kind='backup' AND status='success' ORDER BY id DESC LIMIT 1" --skip-column-names | tr -d '\r' )"
 
 for LOCALE in en de; do
 	if [ "$LOCALE" = 'de' ]; then wp user meta update admin locale de_DE >/dev/null; else wp user meta delete admin locale >/dev/null 2>&1 || true; fi

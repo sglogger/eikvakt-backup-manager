@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - afrit-backup-manager.php
+      - eikvakt-backup-manager.php
       - composer.lock
   workflow_dispatch:
 
@@ -26,15 +26,15 @@ jobs:
       - name: Read and cross-check version
         id: ver
         run: |
-          HEADER=$(grep -E '^\s*\*\s*Version:' afrit-backup-manager.php | head -n1 | awk -F: '{print $2}' | xargs)
-          CONST=$(grep -E "define\(\s*'AFBM_VERSION'" afrit-backup-manager.php | sed -E "s/.*'([0-9.]+)'.*/\1/")
+          HEADER=$(grep -E '^\s*\*\s*Version:' eikvakt-backup-manager.php | head -n1 | awk -F: '{print $2}' | xargs)
+          CONST=$(grep -E "define\(\s*'EKBM_VERSION'" eikvakt-backup-manager.php | sed -E "s/.*'([0-9.]+)'.*/\1/")
           STABLE=$(grep -E '^Stable tag:' readme.txt | awk -F: '{print $2}' | xargs)
           if [ -z "$HEADER" ]; then
-            echo "::error::Could not find Version header in afrit-backup-manager.php"
+            echo "::error::Could not find Version header in eikvakt-backup-manager.php"
             exit 1
           fi
           if [ "$HEADER" != "$CONST" ]; then
-            echo "::error::Version header ($HEADER) and AFBM_VERSION ($CONST) disagree"
+            echo "::error::Version header ($HEADER) and EKBM_VERSION ($CONST) disagree"
             exit 1
           fi
           if [ "$HEADER" != "$STABLE" ]; then
@@ -96,7 +96,7 @@ jobs:
       # and composer.json, which describes the vendor/ tree that ships with it.
       - name: Stage plugin files
         run: |
-          SLUG=afrit-backup-manager
+          SLUG=eikvakt-backup-manager
           STAGE="$RUNNER_TEMP/$SLUG"
           rm -rf "$STAGE"
           mkdir -p "$STAGE"
@@ -107,7 +107,7 @@ jobs:
           # composer.json is missing. composer.lock stays out: it pins dev
           # packages that are not in the ZIP.
           for path in \
-            afrit-backup-manager.php \
+            eikvakt-backup-manager.php \
             uninstall.php \
             index.php \
             readme.txt \
@@ -158,7 +158,7 @@ jobs:
       # release rather than publish it.
       - name: Verify nothing unwanted was staged
         run: |
-          SLUG=afrit-backup-manager
+          SLUG=eikvakt-backup-manager
           STAGE="$RUNNER_TEMP/$SLUG"
 
           echo "--- staged tree (excluding vendor internals) ---"
@@ -196,7 +196,7 @@ jobs:
 
           # A WordPress plugin is identified by its header; without this the
           # ZIP is not installable at all.
-          grep -q '^\s*\*\s*Plugin Name:' "$STAGE/afrit-backup-manager.php" \
+          grep -q '^\s*\*\s*Plugin Name:' "$STAGE/eikvakt-backup-manager.php" \
             || { echo "::error::plugin header missing from the staged bootstrap"; exit 1; }
 
           test -f "$STAGE/vendor/autoload.php" || { echo "::error::vendor/autoload.php missing from the staged plugin"; exit 1; }
@@ -217,7 +217,7 @@ jobs:
 
       - name: Build plugin ZIP
         run: |
-          SLUG=afrit-backup-manager
+          SLUG=eikvakt-backup-manager
           cd "$RUNNER_TEMP"
           zip -rq "$GITHUB_WORKSPACE/$SLUG.zip" "$SLUG"
           unzip -l "$GITHUB_WORKSPACE/$SLUG.zip" | tail -1
@@ -248,7 +248,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.ver.outputs.tag }}
-          files: afrit-backup-manager.zip
+          files: eikvakt-backup-manager.zip
           body_path: release-notes.md
           generate_release_notes: true
           fail_on_unmatched_files: true

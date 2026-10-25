@@ -14,12 +14,12 @@
  * administrator has configured and connected. See readme.txt
  * "External services".
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -124,7 +124,7 @@ final class Storage_Onedrive implements Storage_Driver {
 
 	private function token(): string {
 		if ( empty( $this->config['refresh_token'] ) ) {
-			throw new \RuntimeException( esc_html__( 'This OneDrive destination is not connected yet. Use "Connect" on the Storage tab.', 'afrit-backup-manager' ) );
+			throw new \RuntimeException( esc_html__( 'This OneDrive destination is not connected yet. Use "Connect" on the Storage tab.', 'eikvakt-backup-manager' ) );
 		}
 
 		return OAuth::access_token(
@@ -139,7 +139,7 @@ final class Storage_Onedrive implements Storage_Driver {
 				);
 
 				if ( empty( $data['access_token'] ) ) {
-					throw new \RuntimeException( esc_html__( 'Microsoft refused to renew access. Reconnect the destination.', 'afrit-backup-manager' ) );
+					throw new \RuntimeException( esc_html__( 'Microsoft refused to renew access. Reconnect the destination.', 'eikvakt-backup-manager' ) );
 				}
 
 				// Microsoft rotates refresh tokens; keep the newest one.
@@ -187,7 +187,7 @@ final class Storage_Onedrive implements Storage_Driver {
 
 	public function test() {
 		try {
-			$name = 'afbm-test-' . Util::random_token( 4 ) . '.txt';
+			$name = 'ekbm-test-' . Util::random_token( 4 ) . '.txt';
 			$res  = $this->graph(
 				'PUT',
 				$this->item( $name ) . '/content',
@@ -197,12 +197,12 @@ final class Storage_Onedrive implements Storage_Driver {
 				]
 			);
 			if ( ! in_array( $res['code'], [ 200, 201 ], true ) ) {
-				return new \WP_Error( 'afbm_onedrive', 'OneDrive: ' . $res['body'] );
+				return new \WP_Error( 'ekbm_onedrive', 'OneDrive: ' . $res['body'] );
 			}
 			$this->delete( $name );
 			return true;
 		} catch ( \Throwable $e ) {
-			return new \WP_Error( 'afbm_onedrive', Util::message( $e ) );
+			return new \WP_Error( 'ekbm_onedrive', Util::message( $e ) );
 		}
 	}
 

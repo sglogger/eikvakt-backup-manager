@@ -1,5 +1,5 @@
 /**
- * Afrit Backup Manager — admin behaviour.
+ * Eikvakt Backup Manager — admin behaviour.
  *
  * Plain ES5, no build step. Progressive enhancement only: every form works
  * without JavaScript; this adds live progress, chunked uploads and a few
@@ -8,7 +8,7 @@
 ( function () {
 	'use strict';
 
-	var cfg = window.afbmAdmin || {};
+	var cfg = window.ekbmAdmin || {};
 	var i18n = cfg.i18n || {};
 
 	function format( text ) {
@@ -46,16 +46,16 @@
 	// Live progress (dashboard). Each poll also advances the job, so it
 	// finishes even where loopback requests and WP-Cron are unavailable.
 	// -------------------------------------------------------------------------
-	var box = document.getElementById( 'afbm-progress' );
+	var box = document.getElementById( 'ekbm-progress' );
 
 	if ( box && ! box.hasAttribute( 'hidden' ) ) {
-		var bar = document.getElementById( 'afbm-progress-bar' );
-		var title = document.getElementById( 'afbm-progress-title' );
-		var message = document.getElementById( 'afbm-progress-message' );
+		var bar = document.getElementById( 'ekbm-progress-bar' );
+		var title = document.getElementById( 'ekbm-progress-title' );
+		var message = document.getElementById( 'ekbm-progress-message' );
 
 		var poll = function () {
 			var data = new FormData();
-			data.append( 'action', 'afbm_status' );
+			data.append( 'action', 'ekbm_status' );
 			data.append( 'nonce', cfg.nonce );
 
 			post(
@@ -90,10 +90,10 @@
 	// -------------------------------------------------------------------------
 	// Chunked upload of backup set files (Backups screen).
 	// -------------------------------------------------------------------------
-	var input = document.getElementById( 'afbm-upload-files' );
+	var input = document.getElementById( 'ekbm-upload-files' );
 
 	if ( input ) {
-		var statusLine = document.getElementById( 'afbm-upload-status' );
+		var statusLine = document.getElementById( 'ekbm-upload-status' );
 
 		input.addEventListener( 'change', function () {
 			// Manifest last: a set only appears once all its files are here.
@@ -115,7 +115,7 @@
 
 			var sendChunk = function ( file, offset ) {
 				var data = new FormData();
-				data.append( 'action', 'afbm_upload' );
+				data.append( 'action', 'ekbm_upload' );
 				data.append( 'nonce', cfg.nonce );
 				data.append( 'name', file.name );
 				data.append( 'offset', offset );
@@ -148,7 +148,7 @@
 	// Folder tree (Settings → Files). Mirrors File_Rules: the most specific
 	// folder rule covering a path decides; without one, the default patterns.
 	// -------------------------------------------------------------------------
-	var tree = document.getElementById( 'afbm-tree' );
+	var tree = document.getElementById( 'ekbm-tree' );
 
 	if ( tree ) {
 		var rules = {};
@@ -156,8 +156,8 @@
 			rules = JSON.parse( tree.getAttribute( 'data-rules' ) ) || {};
 		} catch ( e ) {}
 
-		var hidden = document.getElementById( 'afbm-file-rules' );
-		var list = document.getElementById( 'afbm-rule-list' );
+		var hidden = document.getElementById( 'ekbm-file-rules' );
+		var list = document.getElementById( 'ekbm-rule-list' );
 		var nodes = {}; // path → { patternExcluded, li, box, rule, toggle, loaded }
 
 		var parentOf = function ( path ) {
@@ -202,7 +202,7 @@
 			list.innerHTML = '';
 			if ( ! paths.length ) {
 				var empty = document.createElement( 'p' );
-				empty.className = 'afbm-muted';
+				empty.className = 'ekbm-muted';
 				empty.textContent = i18n.noRules;
 				list.appendChild( empty );
 				return;
@@ -233,7 +233,7 @@
 
 		var badge = function ( text, color ) {
 			var span = document.createElement( 'span' );
-			span.className = 'afbm-badge';
+			span.className = 'ekbm-badge';
 			span.style.background = color;
 			span.textContent = text;
 			return span;
@@ -247,11 +247,11 @@
 			children.forEach( function ( child ) {
 				var li = document.createElement( 'li' );
 				var row = document.createElement( 'div' );
-				row.className = 'afbm-tree-row';
+				row.className = 'ekbm-tree-row';
 
 				var toggle = document.createElement( 'button' );
 				toggle.type = 'button';
-				toggle.className = 'afbm-tree-toggle';
+				toggle.className = 'ekbm-tree-toggle';
 				toggle.setAttribute( 'aria-expanded', 'false' );
 				toggle.setAttribute( 'aria-label', i18n.expand );
 				toggle.textContent = child.has_children ? '▸' : '';
@@ -265,7 +265,7 @@
 				label.appendChild( document.createTextNode( ' ' + child.label ) );
 
 				var rule = document.createElement( 'span' );
-				rule.className = 'afbm-tree-rule';
+				rule.className = 'ekbm-tree-rule';
 				rule.appendChild( badge( i18n.ruleBadge, '#2271b1' ) );
 				var reset = document.createElement( 'button' );
 				reset.type = 'button';
@@ -310,12 +310,12 @@
 
 		var load = function ( path, done ) {
 			var data = new FormData();
-			data.append( 'action', 'afbm_tree' );
+			data.append( 'action', 'ekbm_tree' );
 			data.append( 'nonce', cfg.nonce );
 			data.append( 'path', path );
 			post( data, done, function () {
 				var error = document.createElement( 'p' );
-				error.className = 'afbm-muted';
+				error.className = 'ekbm-muted';
 				error.textContent = i18n.treeError;
 				tree.appendChild( error );
 			} );
@@ -342,7 +342,7 @@
 				render( node.li, result.children );
 				if ( result.truncated ) {
 					var more = document.createElement( 'p' );
-					more.className = 'afbm-muted';
+					more.className = 'ekbm-muted';
 					more.textContent = i18n.treeMore;
 					node.li.appendChild( more );
 				}
@@ -392,13 +392,13 @@
 	// -------------------------------------------------------------------------
 	document.addEventListener( 'submit', function ( event ) {
 		var form = event.target;
-		if ( form.classList.contains( 'afbm-confirm-delete' ) && ! window.confirm( i18n.confirmDel ) ) {
+		if ( form.classList.contains( 'ekbm-confirm-delete' ) && ! window.confirm( i18n.confirmDel ) ) {
 			event.preventDefault();
 		}
-		if ( form.classList.contains( 'afbm-confirm-remove' ) && ! window.confirm( i18n.confirmRemove ) ) {
+		if ( form.classList.contains( 'ekbm-confirm-remove' ) && ! window.confirm( i18n.confirmRemove ) ) {
 			event.preventDefault();
 		}
-		if ( form.classList.contains( 'afbm-restore-form' ) && ! window.confirm( i18n.confirmRes ) ) {
+		if ( form.classList.contains( 'ekbm-restore-form' ) && ! window.confirm( i18n.confirmRes ) ) {
 			event.preventDefault();
 		}
 	} );
@@ -406,8 +406,8 @@
 	document.addEventListener( 'click', function ( event ) {
 		var target = event.target;
 
-		if ( target.id === 'afbm-add-row' ) {
-			var body = document.querySelector( '#afbm-replace tbody' );
+		if ( target.id === 'ekbm-add-row' ) {
+			var body = document.querySelector( '#ekbm-replace tbody' );
 			var row = body.querySelector( 'tr:last-child' ).cloneNode( true );
 			Array.prototype.forEach.call( row.querySelectorAll( 'input' ), function ( field ) {
 				field.value = '';
@@ -415,7 +415,7 @@
 			body.appendChild( row );
 		}
 
-		if ( target.classList.contains( 'afbm-remove-row' ) ) {
+		if ( target.classList.contains( 'ekbm-remove-row' ) ) {
 			var tr = target.closest( 'tr' );
 			if ( tr.parentNode.children.length > 1 ) {
 				tr.parentNode.removeChild( tr );
@@ -426,7 +426,7 @@
 			}
 		}
 
-		if ( target.classList.contains( 'afbm-toggle-all' ) ) {
+		if ( target.classList.contains( 'ekbm-toggle-all' ) ) {
 			var boxes = document.querySelectorAll( target.getAttribute( 'data-target' ) + ' input[type=checkbox]' );
 			var anyOff = Array.prototype.some.call( boxes, function ( b ) {
 				return ! b.checked;
@@ -436,7 +436,7 @@
 			} );
 		}
 
-		if ( target.classList.contains( 'afbm-copy' ) ) {
+		if ( target.classList.contains( 'ekbm-copy' ) ) {
 			var source = document.querySelector( target.getAttribute( 'data-target' ) );
 			source.select();
 			if ( navigator.clipboard ) {
@@ -450,27 +450,27 @@
 
 	// Dropbox: own app vs. built-in app — show the matching guide and fields.
 	var syncOwnApp = function () {
-		var toggle = document.querySelector( '.afbm-own-app-toggle' );
-		var table = document.querySelector( '.afbm-dest-table' );
+		var toggle = document.querySelector( '.ekbm-own-app-toggle' );
+		var table = document.querySelector( '.ekbm-dest-table' );
 		if ( ! toggle || ! table ) {
 			return;
 		}
 		table.setAttribute( 'data-own-app', toggle.checked ? '1' : '0' );
-		Array.prototype.forEach.call( document.querySelectorAll( '.afbm-guide.afbm-own-only' ), function ( el ) {
+		Array.prototype.forEach.call( document.querySelectorAll( '.ekbm-guide.ekbm-own-only' ), function ( el ) {
 			el.hidden = ! toggle.checked;
 		} );
-		Array.prototype.forEach.call( document.querySelectorAll( '.afbm-guide.afbm-plugin-only' ), function ( el ) {
+		Array.prototype.forEach.call( document.querySelectorAll( '.ekbm-guide.ekbm-plugin-only' ), function ( el ) {
 			el.hidden = toggle.checked;
 		} );
 	};
 	syncOwnApp();
 
 	document.addEventListener( 'change', function ( event ) {
-		if ( event.target.classList.contains( 'afbm-own-app-toggle' ) ) {
+		if ( event.target.classList.contains( 'ekbm-own-app-toggle' ) ) {
 			syncOwnApp();
 		}
-		if ( event.target.classList.contains( 'afbm-frequency' ) ) {
-			event.target.closest( '.afbm-schedule' ).setAttribute( 'data-frequency', event.target.value );
+		if ( event.target.classList.contains( 'ekbm-frequency' ) ) {
+			event.target.closest( '.ekbm-schedule' ).setAttribute( 'data-frequency', event.target.value );
 		}
 	} );
 }() );

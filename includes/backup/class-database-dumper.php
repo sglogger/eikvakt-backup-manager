@@ -11,12 +11,12 @@
  * statement ever spans lines. The importer relies on that to stream the dump
  * line by line and to rename tables on the way in.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Database_Dumper {
 
-	public const HEADER = '-- afbm-dump 1';
+	public const HEADER = '-- ekbm-dump 1';
 
 	private const ROWS_PER_QUERY = 1000;
 

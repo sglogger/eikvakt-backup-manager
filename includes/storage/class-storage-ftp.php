@@ -24,12 +24,12 @@
  * starting from the size the server reports (so a chunk that was sent but
  * not recorded is never appended twice); downloads use byte ranges.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -82,7 +82,7 @@ final class Storage_Ftp implements Storage_Driver {
 
 		$host = (string) ( $this->config['host'] ?? '' );
 		if ( 1 !== preg_match( '/^[a-z0-9.\-]+$|^\[[0-9a-f:]+\]$/i', $host ) ) {
-			throw new \RuntimeException( esc_html__( 'The FTP host name is not valid.', 'afrit-backup-manager' ) );
+			throw new \RuntimeException( esc_html__( 'The FTP host name is not valid.', 'eikvakt-backup-manager' ) );
 		}
 
 		$dir      = $this->dir();
@@ -104,7 +104,7 @@ final class Storage_Ftp implements Storage_Driver {
 	 */
 	private function handle( string $url, array $options = [], bool $verify = true ) {
 		if ( ! self::is_available() ) {
-			throw new \RuntimeException( esc_html__( 'The PHP cURL extension is not installed on this server.', 'afrit-backup-manager' ) );
+			throw new \RuntimeException( esc_html__( 'The PHP cURL extension is not installed on this server.', 'eikvakt-backup-manager' ) );
 		}
 
 		// phpcs:disable WordPress.WP.AlternativeFunctions.curl_curl_init, WordPress.WP.AlternativeFunctions.curl_curl_setopt_array -- the WordPress HTTP API speaks HTTP only; FTP with verified TLS needs cURL directly.
@@ -173,18 +173,18 @@ final class Storage_Ftp implements Storage_Driver {
 	private static function explain( int $errno, string $error ): string {
 		switch ( $errno ) {
 			case 64: // CURLE_USE_SSL_FAILED.
-				return __( 'The server does not support FTPS (TLS). Nothing was sent. Use SFTP, enable TLS on the server, or — only on a trusted network — switch FTPS off.', 'afrit-backup-manager' );
+				return __( 'The server does not support FTPS (TLS). Nothing was sent. Use SFTP, enable TLS on the server, or — only on a trusted network — switch FTPS off.', 'eikvakt-backup-manager' );
 			case 60: // CURLE_PEER_FAILED_VERIFICATION.
 			case 77: // CURLE_SSL_CACERT_BADFILE.
-				return __( 'The server\'s TLS certificate could not be verified, so nothing was sent. If this is your own server with a self-signed certificate, pin its key (see "Test").', 'afrit-backup-manager' );
+				return __( 'The server\'s TLS certificate could not be verified, so nothing was sent. If this is your own server with a self-signed certificate, pin its key (see "Test").', 'eikvakt-backup-manager' );
 			case 90: // CURLE_SSL_PINNEDPUBKEYNOTMATCH.
-				return __( 'The server\'s TLS key does not match the pinned key. Nothing was sent. If the certificate was replaced on purpose, update the pinned key.', 'afrit-backup-manager' );
+				return __( 'The server\'s TLS key does not match the pinned key. Nothing was sent. If the certificate was replaced on purpose, update the pinned key.', 'eikvakt-backup-manager' );
 			case 67: // CURLE_LOGIN_DENIED.
-				return __( 'The FTP server rejected the user name or password.', 'afrit-backup-manager' );
+				return __( 'The FTP server rejected the user name or password.', 'eikvakt-backup-manager' );
 			case 6:  // CURLE_COULDNT_RESOLVE_HOST.
 			case 7:  // CURLE_COULDNT_CONNECT.
 			case 28: // CURLE_OPERATION_TIMEDOUT.
-				return __( 'Could not connect to the FTP server.', 'afrit-backup-manager' );
+				return __( 'Could not connect to the FTP server.', 'eikvakt-backup-manager' );
 		}
 		return 'FTP: ' . $error;
 	}
@@ -250,7 +250,7 @@ final class Storage_Ftp implements Storage_Driver {
 	}
 
 	public function test() {
-		$name = 'afbm-test-' . Util::random_token( 4 ) . '.txt';
+		$name = 'ekbm-test-' . Util::random_token( 4 ) . '.txt';
 
 		try {
 			$this->put( $name, 'ok', 0 );
@@ -264,13 +264,13 @@ final class Storage_Ftp implements Storage_Driver {
 				if ( '' !== $this->seen_pin ) {
 					$message .= ' ' . sprintf(
 						/* translators: %s: public key pin */
-						__( 'The server presented the key %s. Compare it with the key on your server; only if it matches, enter it as pinned key.', 'afrit-backup-manager' ),
+						__( 'The server presented the key %s. Compare it with the key on your server; only if it matches, enter it as pinned key.', 'eikvakt-backup-manager' ),
 						$this->seen_pin
 					);
 				}
 			}
 
-			return new \WP_Error( 'afbm_ftp', $message );
+			return new \WP_Error( 'ekbm_ftp', $message );
 		}
 	}
 
@@ -347,7 +347,7 @@ final class Storage_Ftp implements Storage_Driver {
 		$offset = is_file( $local ) && ! empty( $state['started'] ) ? (int) filesize( $local ) : 0;
 
 		if ( $size < 0 ) {
-			throw new \RuntimeException( esc_html__( 'The file does not exist on the FTP server.', 'afrit-backup-manager' ) );
+			throw new \RuntimeException( esc_html__( 'The file does not exist on the FTP server.', 'eikvakt-backup-manager' ) );
 		}
 
 		$out = fopen( $local, $offset > 0 ? 'ab' : 'wb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- streaming into the work directory.

@@ -40,8 +40,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SLUG: afrit-backup-manager
-  SVN_URL: https://plugins.svn.wordpress.org/afrit-backup-manager
+  SLUG: eikvakt-backup-manager
+  SVN_URL: https://plugins.svn.wordpress.org/eikvakt-backup-manager
 
 jobs:
   deploy:

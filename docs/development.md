@@ -34,7 +34,7 @@ WordPress and WP-CLI images (most hosts have it; the images do not).
 | File | Why |
 |---|---|
 | `dev-loopback.php` | Inside Docker, `localhost:9190` is not the web server. Rewrites requests to the published ports to the service names, so loopbacks, the exposure test and migrations between the two sites work. |
-| `dev-afbm-excludes.php` | The repo is mounted as the plugin directory and contains `local_wp_core/`, `db_data/`, `vendor/`, … — excluded from test backups. |
+| `dev-ekbm-excludes.php` | The repo is mounted as the plugin directory and contains `local_wp_core/`, `db_data/`, `vendor/`, … — excluded from test backups. |
 | `dev-mailpit.php` | Routes `wp_mail()` to Mailpit. |
 
 All three only act when `WP_ENVIRONMENT_TYPE` is `local`.
@@ -48,9 +48,9 @@ directories for a clean slate.
 ## Useful commands
 
 ```sh
-docker compose exec wpcli wp afbm status
-docker compose exec wpcli wp afbm backup --label=test
-docker compose exec wpcli sh -c 'ls -la wp-content/uploads/afbm-backups-*'
+docker compose exec wpcli wp eikvakt status
+docker compose exec wpcli wp eikvakt backup --label=test
+docker compose exec wpcli sh -c 'ls -la wp-content/uploads/ekbm-backups-*'
 docker compose exec sftp ls -la /home/backup/upload/backups
 tail -f local_wp_core/wp-content/debug.log
 ```

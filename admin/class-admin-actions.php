@@ -3,14 +3,15 @@
  * Handlers for every form on the plugin's screens.
  *
  * Called by Admin::handle_post() after the capability, nonce and password
- * checks. Every field is sanitised here, individually.
+ * checks, with the form already sanitised by Admin::request(). Each handler
+ * then validates its fields: ranges, allow-lists and formats.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -19,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Admin_Actions {
 
 	/**
-	 * @param array<string, mixed> $post Unslashed POST data.
+	 * @param array<string, mixed> $post Sanitised POST data.
 	 */
 	public static function dispatch( string $action, array $post ): void {
 		switch ( $action ) {
@@ -87,7 +88,7 @@ final class Admin_Actions {
 					[
 						'components' => Components::ALL,
 						'type'       => 'full',
-						'label'      => __( 'Migration package', 'afrit-backup-manager' ),
+						'label'      => __( 'Migration package', 'eikvakt-backup-manager' ),
 					],
 					'migration'
 				);
@@ -99,7 +100,7 @@ final class Admin_Actions {
 				if ( '' === $key ) {
 					Admin::redirect( Admin::MENU_MIGRATION, 'key_failed' );
 				}
-				set_transient( 'afbm_new_key_' . get_current_user_id(), Secret_Cipher::encrypt( $key ), 10 * MINUTE_IN_SECONDS );
+				set_transient( 'ekbm_new_key_' . get_current_user_id(), Secret_Cipher::encrypt( $key ), 10 * MINUTE_IN_SECONDS );
 				Admin::redirect( Admin::MENU_MIGRATION, 'key_created' );
 				break;
 
@@ -230,7 +231,7 @@ final class Admin_Actions {
 					'components'   => '',
 					'size_bytes'   => 0,
 					'destinations' => '',
-					'summary'      => __( 'This is a test message from Afrit Backup Manager.', 'afrit-backup-manager' ),
+					'summary'      => __( 'This is a test message from Eikvakt Backup Manager.', 'eikvakt-backup-manager' ),
 				];
 				self::back( 'general', Email_Report::send( $run ) ? 'mail_ok' : 'mail_failed' );
 				break;
@@ -319,7 +320,7 @@ final class Admin_Actions {
 				[
 					'components' => $components,
 					'type'       => Components::ALL === $components ? 'full' : ( [] === Components::file_components( $components ) ? 'database' : 'partial' ),
-					'label'      => __( 'Before restore', 'afrit-backup-manager' ),
+					'label'      => __( 'Before restore', 'eikvakt-backup-manager' ),
 				],
 				'safety'
 			);
@@ -504,7 +505,7 @@ final class Admin_Actions {
 			foreach ( [ 'own_app', 'app_key', 'client_id', 'tenant' ] as $identity ) {
 				if ( ( $existing['config'][ $identity ] ?? '' ) !== ( $config[ $identity ] ?? '' ) ) {
 					$config['refresh_token'] = '';
-					delete_transient( 'afbm_token_' . $destination['id'] );
+					delete_transient( 'ekbm_token_' . $destination['id'] );
 				}
 			}
 		}
@@ -592,7 +593,7 @@ final class Admin_Actions {
 
 		// Changing or removing an existing password needs the current one —
 		// unless the wp-config.php recovery constant is set.
-		$recovery = defined( 'AFBM_DISABLE_PASSWORD' ) && AFBM_DISABLE_PASSWORD;
+		$recovery = defined( 'EKBM_DISABLE_PASSWORD' ) && EKBM_DISABLE_PASSWORD;
 		if ( $has_pass && ! $recovery && ! Password_Gate::verify( $current ) ) {
 			self::back( 'security', 'password_wrong' );
 		}

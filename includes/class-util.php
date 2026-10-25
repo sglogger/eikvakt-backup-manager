@@ -2,12 +2,12 @@
 /**
  * Small helpers shared by the engine, the storage drivers and the admin.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -125,7 +125,7 @@ final class Util {
 	}
 
 	public static function playground_notice(): string {
-		return __( 'This site runs in WordPress Playground. Its browser sandbox cannot upload binary files such as backup archives, so remote destinations do not work here; backups stay on this server. On a real server, Dropbox, OneDrive, FTP and SFTP work normally.', 'afrit-backup-manager' );
+		return __( 'This site runs in WordPress Playground. Its browser sandbox cannot upload binary files such as backup archives, so remote destinations do not work here; backups stay on this server. On a real server, Dropbox, OneDrive, FTP and SFTP work normally.', 'eikvakt-backup-manager' );
 	}
 
 	/**

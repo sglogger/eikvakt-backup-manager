@@ -1,4 +1,4 @@
-# Afrit Backup Manager
+# Eikvakt Backup Manager
 
 Backups, restores and migrations for the whole WordPress installation:
 incremental file backups, selectable database tables, encryption, scheduling,
@@ -8,11 +8,12 @@ separately, or move the site to a new domain or host.
 
 **There is no PRO version. Every feature is free, and will stay that way.**
 
-**About the name:** *afrit* is Icelandic for "copy", "duplicate" — Icelandic
-builds its word for a backup from it: *öryggisafrit*, literally "safety copy".
-Which is fairly close to the entire job description: keep a good copy, and
-give it back the moment it is needed. The sibling plugin *Vokull Security
-Center* takes its name from Icelandic as well.
+**About the name:** *Eikvakt* (say "ayk-vahkt") joins two Norwegian words:
+*eik*, oak, and *vakt*, watch or guard — the oak guard. Oak for what lasts, a
+guard for what keeps watch. Which is fairly close to the entire job
+description: watch over a good copy of the site, and give it back the moment
+it is needed. Like its sibling plugin *Vokull Security Center*, it carries a
+Nordic name.
 
 This README is the developer manual's front page. The detailed documentation
 lives in [`docs/`](docs/README.md); the user-facing description is in
@@ -78,7 +79,7 @@ All screens exist in English and German: [`screenshots/en`](screenshots/en),
 | Encryption | XChaCha20-Poly1305 stream format, PBKDF2 key | [backup format](docs/backup-format.md#encryption) |
 | Security | Exposure self-test, authenticated downloads, sealed credentials, plugin password | [security](docs/security.md) |
 | Reports | Run history with full logs, e-mail reports | [architecture](docs/architecture.md#reports) |
-| WP-CLI | `wp afbm backup|restore|list|keep|migrate|prune|rescan|status` | [WP-CLI](docs/wp-cli.md) |
+| WP-CLI | `wp eikvakt backup|restore|list|keep|migrate|prune|rescan|status` | [WP-CLI](docs/wp-cli.md) |
 
 ## Requirements
 
@@ -97,8 +98,8 @@ installed with Composer.
 
 | Constant | Effect |
 |---|---|
-| `AFBM_DISABLE_PASSWORD` | `true` bypasses the plugin password (recovery when it is lost). |
-| `AFBM_DROPBOX_APP_KEY` | App key of the built-in Dropbox app, overriding `Storage_Dropbox::PLUGIN_APP_KEY`. |
+| `EKBM_DISABLE_PASSWORD` | `true` bypasses the plugin password (recovery when it is lost). |
+| `EKBM_DROPBOX_APP_KEY` | App key of the built-in Dropbox app, overriding `Storage_Dropbox::PLUGIN_APP_KEY`. |
 
 Everything else is a setting in the admin, or a [filter](docs/hooks.md).
 
@@ -111,14 +112,14 @@ cp docker-compose.yml-example docker-compose.yml
 cp .env.example .env
 docker compose up -d --build
 
-docker compose exec wpcli wp core install --url=http://localhost:9190 --title="Afrit Dev" \
+docker compose exec wpcli wp core install --url=http://localhost:9190 --title="Eikvakt Dev" \
   --admin_user=admin --admin_password=admin123 --admin_email=admin@example.test --skip-email
-docker compose exec wpcli wp plugin activate afrit-backup-manager
+docker compose exec wpcli wp plugin activate eikvakt-backup-manager
 
 # Second site, the migration target (table prefix wpt_):
-docker compose exec wpcli-target wp core install --url=http://localhost:9192 --title="Afrit Target" \
+docker compose exec wpcli-target wp core install --url=http://localhost:9192 --title="Eikvakt Target" \
   --admin_user=admin --admin_password=admin123 --admin_email=admin@example.test --skip-email
-docker compose exec wpcli-target wp plugin activate afrit-backup-manager
+docker compose exec wpcli-target wp plugin activate eikvakt-backup-manager
 
 # Dependencies (no local PHP needed):
 docker run --rm -u "$(id -u):$(id -g)" -v "$PWD":/app -e COMPOSER_HOME=/tmp/composer composer:2 install
@@ -153,15 +154,15 @@ dev/screenshots/run.sh icons    # icons and banners only
 ```
 
 Runs the official Playwright image against the Docker site. The SVG master is
-`assets/logos/afrit-backup-manager-icon.svg`; PNGs and the WordPress.org
+`assets/logos/eikvakt-backup-manager-icon.svg`; PNGs and the WordPress.org
 banners are rendered from it.
 
 ## Coding conventions
 
 Same as the sibling plugin *Vokull Security Center*:
 
-* Namespace `AfritBackupManager`; `final class Under_Score` in `class-kebab-case.php`.
-* Prefixes: `AFBM_` (constants), `afbm_` (options, hooks, tables, form fields).
+* Namespace `EikvaktBackupManager`; `final class Under_Score` in `class-kebab-case.php`.
+* Prefixes: `EKBM_` (constants), `ekbm_` (options, hooks, tables, form fields).
 * No autoloader in production: the main file `require_once`s every class in
   dependency order. Composer's autoloader is loaded lazily for phpseclib only.
 * Components are objects with a `register(): void` method that only adds hooks.
@@ -175,10 +176,10 @@ Same as the sibling plugin *Vokull Security Center*:
 
 ## Releasing (maintainer)
 
-1. Bump the version in **three** places: plugin header, `AFBM_VERSION`,
+1. Bump the version in **three** places: plugin header, `EKBM_VERSION`,
    `Stable tag` in readme.txt. Add a CHANGELOG.md entry and mirror it into
    readme.txt.
-2. `./package-plugin.sh` builds `dist/afrit-backup-manager-<version>.zip`
+2. `./package-plugin.sh` builds `dist/eikvakt-backup-manager-<version>.zip`
    (allow-list staging, `composer install --no-dev`, refuses dev files).
 3. Push to `main`: `.github/workflows/auto-tag.yml` tags, builds the same ZIP
    and publishes a GitHub release; `deploy-to-wordpress-org.yml` syncs it to SVN.
@@ -187,10 +188,10 @@ More in [docs/releasing.md](docs/releasing.md).
 
 ## Translations
 
-English source strings, text domain `afrit-backup-manager`. No translation
+English source strings, text domain `eikvakt-backup-manager`. No translation
 files ship in the ZIP — WordPress.org delivers them from translate.wordpress.org.
-The template is `languages/afrit-backup-manager.pot`; the German translation to
-import there is `dev/translations/afrit-backup-manager-de_DE.po`. See
+The template is `languages/eikvakt-backup-manager.pot`; the German translation to
+import there is `dev/translations/eikvakt-backup-manager-de_DE.po`. See
 [docs/translations.md](docs/translations.md).
 
 ## Privacy

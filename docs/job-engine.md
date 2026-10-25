@@ -31,8 +31,8 @@ visits. The engine therefore splits every job into resumable steps.
 ## Ticks and hand-over
 
 ```
-enqueue() ──► queue.json ──► kick(): ─┬─ wp_schedule_single_event(+60s, afbm_job_tick)
-                                      └─ non-blocking POST admin-ajax.php?action=afbm_tick (HMAC key)
+enqueue() ──► queue.json ──► kick(): ─┬─ wp_schedule_single_event(+60s, ekbm_job_tick)
+                                      └─ non-blocking POST admin-ajax.php?action=ekbm_tick (HMAC key)
 tick():  flock(runner.lock, NB) ─► current.json or next from queue
          ─► handler->step($job, now + budget) ─► save ─► finished? end() : kick()
 ```
@@ -44,8 +44,8 @@ tick():  flock(runner.lock, NB) ─► current.json or next from queue
 * **Cancellation** uses a flag file (`cancel.flag`), because the running step
   holds the state in memory and would overwrite a field in it.
 * **Loopback authentication**: the unauthenticated endpoint only accepts
-  `HMAC-SHA256('afbm-tick', runner.key)` and can only advance an existing job.
-* **Polling**: `wp_ajax_afbm_status` runs an 8-second tick when the lock is free,
+  `HMAC-SHA256('ekbm-tick', runner.key)` and can only advance an existing job.
+* **Polling**: `wp_ajax_ekbm_status` runs an 8-second tick when the lock is free,
   so a manually started job finishes even if loopbacks and cron are blocked.
 * **Synchronous mode**: `Job_Runner::run_now()` (WP-CLI, pre-update backups)
   loops `step()` in-process and bypasses the queue.
@@ -65,6 +65,6 @@ handler must tolerate re-running the last step:
 ## Adding a job type
 
 1. Implement `Job_Handler`; keep `state` small and JSON-serialisable.
-2. Register it with the `afbm_job_handlers` filter (or in `Job_Runner::handler()`).
+2. Register it with the `ekbm_job_handlers` filter (or in `Job_Runner::handler()`).
 3. Fill `$job['result']` (`backup_id`, `size`, `components`, …) for the report.
 4. Use `Job_Runner::log()` / `warn()` for the log; never echo.

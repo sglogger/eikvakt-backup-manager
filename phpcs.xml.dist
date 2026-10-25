@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Afrit Backup Manager">
-	<description>WordPress coding standards for Afrit Backup Manager.</description>
+<ruleset name="Eikvakt Backup Manager">
+	<description>WordPress coding standards for Eikvakt Backup Manager.</description>
 
 	<file>.</file>
 
@@ -30,13 +30,13 @@
 	</rule>
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="afrit-backup-manager"/>
+			<property name="text_domain" type="array" value="eikvakt-backup-manager"/>
 		</properties>
 	</rule>
 
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="afbm,AFBM,AfritBackupManager"/>
+			<property name="prefixes" type="array" value="ekbm,EKBM,EikvaktBackupManager"/>
 		</properties>
 	</rule>
 

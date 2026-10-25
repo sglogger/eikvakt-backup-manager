@@ -1,9 +1,9 @@
 <?php
 declare( strict_types = 1 );
 
-namespace AfritBackupManager\Tests\Unit;
+namespace EikvaktBackupManager\Tests\Unit;
 
-use AfritBackupManager\Components;
+use EikvaktBackupManager\Components;
 use PHPUnit\Framework\TestCase;
 
 final class ComponentsTest extends TestCase {

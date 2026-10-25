@@ -1,9 +1,9 @@
 <?php
 declare( strict_types = 1 );
 
-namespace AfritBackupManager\Tests\Unit;
+namespace EikvaktBackupManager\Tests\Unit;
 
-use AfritBackupManager\Encryptor;
+use EikvaktBackupManager\Encryptor;
 use PHPUnit\Framework\TestCase;
 
 final class EncryptorTest extends TestCase {
@@ -16,7 +16,7 @@ final class EncryptorTest extends TestCase {
 	private string $dir;
 
 	protected function setUp(): void {
-		$this->dir = sys_get_temp_dir() . '/afbm-enc-' . bin2hex( random_bytes( 4 ) );
+		$this->dir = sys_get_temp_dir() . '/ekbm-enc-' . bin2hex( random_bytes( 4 ) );
 		mkdir( $this->dir );
 	}
 

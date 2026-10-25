@@ -1,16 +1,16 @@
 <?php
 /**
- * WP-CLI commands: `wp afbm <command>`.
+ * WP-CLI commands: `wp eikvakt <command>`.
  *
  * Jobs started from the command line run to completion in the foreground,
  * without the time budget or the loopback hand-over the web runner needs.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -40,9 +40,9 @@ final class Cli_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp afbm backup
-	 *     wp afbm backup --components=core,plugins,themes,uploads,content --type=auto
-	 *     wp afbm backup --components=database --type=database
+	 *     wp eikvakt backup
+	 *     wp eikvakt backup --components=core,plugins,themes,uploads,content --type=auto
+	 *     wp eikvakt backup --components=database --type=database
 	 *
 	 * @param string[]              $args       Positional arguments.
 	 * @param array<string, string> $assoc_args Options.
@@ -109,7 +109,7 @@ final class Cli_Command {
 	 * ## OPTIONS
 	 *
 	 * <id>
-	 * : Backup id (see `wp afbm list`).
+	 * : Backup id (see `wp eikvakt list`).
 	 *
 	 * [--components=<list>]
 	 * : Comma-separated subset. Default: everything in the backup.
@@ -134,8 +134,8 @@ final class Cli_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp afbm restore example-com_20261019-020000_f_ab12cd34
-	 *     wp afbm restore <id> --components=database --replace='https://old.example=>https://new.example'
+	 *     wp eikvakt restore example-com_20261019-020000_f_ab12cd34
+	 *     wp eikvakt restore <id> --components=database --replace='https://old.example=>https://new.example'
 	 *
 	 * @param string[]              $args       Positional arguments.
 	 * @param array<string, string> $assoc_args Options.
@@ -202,7 +202,7 @@ final class Cli_Command {
 			]
 		);
 
-		\WP_CLI::success( sprintf( 'Imported %s. Restore it with: wp afbm restore %s', $job['result']['backup_id'] ?? '', $job['result']['backup_id'] ?? '' ) );
+		\WP_CLI::success( sprintf( 'Imported %s. Restore it with: wp eikvakt restore %s', $job['result']['backup_id'] ?? '', $job['result']['backup_id'] ?? '' ) );
 	}
 
 	/**
@@ -214,15 +214,15 @@ final class Cli_Command {
 	 * ## OPTIONS
 	 *
 	 * <id>
-	 * : Backup id (see `wp afbm list`).
+	 * : Backup id (see `wp eikvakt list`).
 	 *
 	 * [--remove]
 	 * : Remove the mark instead.
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp afbm keep example-com_20261019-020000_f_3fa9c2d81b07
-	 *     wp afbm keep example-com_20261019-020000_f_3fa9c2d81b07 --remove
+	 *     wp eikvakt keep example-com_20261019-020000_f_3fa9c2d81b07
+	 *     wp eikvakt keep example-com_20261019-020000_f_3fa9c2d81b07 --remove
 	 *
 	 * @param string[]              $args       Positional arguments.
 	 * @param array<string, string> $assoc_args Options.

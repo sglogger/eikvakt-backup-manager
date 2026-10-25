@@ -1,6 +1,6 @@
 # Backup format
 
-Format version 1 (`AFBM_FORMAT_VERSION`). A restore refuses newer versions.
+Format version 1 (`EKBM_FORMAT_VERSION`). A restore refuses newer versions.
 
 ## A backup set
 
@@ -63,7 +63,7 @@ wp-content lives elsewhere on the target:
 ## File index
 
 gzip, one line per file: `path TAB size TAB mtime TAB holder`, first line
-`#afbm-index 1`. *holder* is the id of the set that contains the file's content.
+`#ekbm-index 1`. *holder* is the id of the set that contains the file's content.
 
 ## Chains
 
@@ -79,7 +79,7 @@ gzip, one line per file: `path TAB size TAB mtime TAB holder`, first line
 ## SQL dump
 
 ```
--- afbm-dump 1 prefix=wp_
+-- ekbm-dump 1 prefix=wp_
 /*!40101 SET NAMES utf8mb4 */;
 SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';
@@ -98,7 +98,7 @@ and routines are not dumped. The plugin's own tables are never dumped.
 `Encryptor`, file extension `.enc`:
 
 ```
-header  "AFBMENC1" | kdf u8 (2 = PBKDF2-SHA256) | salt 16 | iterations u32 | reserved u32
+header  "EKBMENC1" | kdf u8 (2 = PBKDF2-SHA256) | salt 16 | iterations u32 | reserved u32
 chunk   final u8 | nonce 24 | length u32 | XChaCha20-Poly1305 ciphertext (≤ 1 MiB + 16)
 AD      sha256(header) | chunk index u64 | final u8
 ```

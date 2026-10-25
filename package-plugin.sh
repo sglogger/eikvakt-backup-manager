@@ -17,7 +17,7 @@
 
 set -euo pipefail
 
-SLUG='afrit-backup-manager'
+SLUG='eikvakt-backup-manager'
 ROOT="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" && pwd )"
 OUTPUT=''
 KEEP_STAGE=0
@@ -59,11 +59,11 @@ die()  { printf '\033[1;31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 # -----------------------------------------------------------------------------
 
 HEADER=$(grep -E '^\s*\*\s*Version:' "$SLUG.php" | head -n1 | awk -F: '{print $2}' | xargs)
-CONST=$(grep -E "define\(\s*'AFBM_VERSION'" "$SLUG.php" | sed -E "s/.*'([0-9.]+)'.*/\1/")
+CONST=$(grep -E "define\(\s*'EKBM_VERSION'" "$SLUG.php" | sed -E "s/.*'([0-9.]+)'.*/\1/")
 STABLE=$(grep -E '^Stable tag:' readme.txt | awk -F: '{print $2}' | xargs)
 
 [ -n "$HEADER" ] || die "could not find the Version header in $SLUG.php"
-[ "$HEADER" = "$CONST" ]  || die "Version header ($HEADER) and AFBM_VERSION ($CONST) disagree"
+[ "$HEADER" = "$CONST" ]  || die "Version header ($HEADER) and EKBM_VERSION ($CONST) disagree"
 [ "$HEADER" = "$STABLE" ] || die "Version header ($HEADER) and readme.txt Stable tag ($STABLE) disagree"
 
 VERSION="$HEADER"

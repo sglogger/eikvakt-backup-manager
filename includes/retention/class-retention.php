@@ -6,12 +6,12 @@
  * cannot be deleted (destination offline) stays in the catalog and is tried
  * again after the next backup.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -38,7 +38,7 @@ final class Retention {
 		 * @param string[]   $ids  Ids.
 		 * @param Manifest[] $sets All complete sets.
 		 */
-		$ids = (array) apply_filters( 'afbm_retention_delete', Retention_Policy::to_delete( $sets, $rules, time(), wp_timezone() ), $sets );
+		$ids = (array) apply_filters( 'ekbm_retention_delete', Retention_Policy::to_delete( $sets, $rules, time(), wp_timezone() ), $sets );
 
 		$removed = 0;
 		foreach ( $ids as $id ) {

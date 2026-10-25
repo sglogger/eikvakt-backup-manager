@@ -11,11 +11,11 @@
 | fetch | Missing set files are downloaded from a destination into the job's work dir (`.part` + rename). First pass: index and dump; second pass: the archive parts `plan` asked for. |
 | decrypt | `.enc` files → `plain-<name>` in the work dir, resumable. Wrong passphrase → job fails with a clear message. |
 | plan | Reads the index, keeps paths of the selected components, drops protected ones, writes one extraction list per holder set. |
-| files | Extracts each entry to `<target>.afbm-<rand>`, renames into place, restores mtime (so the next incremental does not re-archive everything). |
+| files | Extracts each entry to `<target>.ekbm-<rand>`, renames into place, restores mtime (so the next incremental does not re-archive everything). |
 | prune | Optional: scans the selected components and deletes files not in the index; limited to the `only` folders of partial backups. |
 | database | `Sql_Importer` streams the dump into temporary tables `afbt<tag>_<target name>`. |
 | replace | Search & replace in the temporary tables; table-prefix fix-ups. |
-| swap | Copies this site's `afbm_*` options into the new options table, then one `RENAME TABLE` swaps all tables atomically; old tables are dropped. |
+| swap | Copies this site's `ekbm_*` options into the new options table, then one `RENAME TABLE` swaps all tables atomically; old tables are dropped. |
 
 Never overwritten by a restore: this plugin's own directory and settings, and
 `wp-config.php` unless explicitly selected.
@@ -51,14 +51,14 @@ Three ways to bring a set to another site, all ending in a normal restore with
 the old URL/paths pre-filled for replacement:
 
 1. **Migration key** (server to server). The source creates a key for a set
-   whose files are local: `AFBM1-` + base64url JSON `{u: admin-ajax URL, t: 256-bit token, b: backup id}`.
+   whose files are local: `EKBM1-` + base64url JSON `{u: admin-ajax URL, t: 256-bit token, b: backup id}`.
    Only `sha256(token)` is stored on the source, with a 24-hour expiry. The target's
-   `Pull_Job` calls `admin-ajax.php?action=afbm_migrate` with `op=list` (chain
+   `Pull_Job` calls `admin-ajax.php?action=ekbm_migrate` with `op=list` (chain
    manifests) and `op=chunk&name&offset` (8 MB chunks), verifies sizes, writes
    the manifests last and adds the sets to its catalog.
 2. **Shared storage**: same destination configured on both sites → *Rescan all
    locations* on the target.
 3. **Upload**: files downloaded from the source are uploaded on the Backups
-   screen in 8 MB chunks (`wp_ajax_afbm_upload`); the manifest goes last.
+   screen in 8 MB chunks (`wp_ajax_ekbm_upload`); the manifest goes last.
 
 Selective migration = choosing components/tables on the Restore screen.

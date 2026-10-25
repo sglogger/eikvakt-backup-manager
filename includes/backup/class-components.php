@@ -16,12 +16,12 @@
  *
  * Free of WordPress: unit-tested on its own.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -91,17 +91,17 @@ final class Components {
 	public static function label( string $component ): string {
 		switch ( $component ) {
 			case self::CORE:
-				return __( 'WordPress core & root files', 'afrit-backup-manager' );
+				return __( 'WordPress core & root files', 'eikvakt-backup-manager' );
 			case self::PLUGINS:
-				return __( 'Plugins', 'afrit-backup-manager' );
+				return __( 'Plugins', 'eikvakt-backup-manager' );
 			case self::THEMES:
-				return __( 'Themes', 'afrit-backup-manager' );
+				return __( 'Themes', 'eikvakt-backup-manager' );
 			case self::UPLOADS:
-				return __( 'Uploads (media)', 'afrit-backup-manager' );
+				return __( 'Uploads (media)', 'eikvakt-backup-manager' );
 			case self::CONTENT:
-				return __( 'Other wp-content files', 'afrit-backup-manager' );
+				return __( 'Other wp-content files', 'eikvakt-backup-manager' );
 			case self::DATABASE:
-				return __( 'Database', 'afrit-backup-manager' );
+				return __( 'Database', 'eikvakt-backup-manager' );
 		}
 		return $component;
 	}
@@ -112,11 +112,11 @@ final class Components {
 	public static function short_label( string $component ): string {
 		switch ( $component ) {
 			case self::CORE:
-				return __( 'Core', 'afrit-backup-manager' );
+				return __( 'Core', 'eikvakt-backup-manager' );
 			case self::CONTENT:
-				return __( 'wp-content', 'afrit-backup-manager' );
+				return __( 'wp-content', 'eikvakt-backup-manager' );
 			case self::UPLOADS:
-				return __( 'Uploads', 'afrit-backup-manager' );
+				return __( 'Uploads', 'eikvakt-backup-manager' );
 		}
 		return self::label( $component );
 	}

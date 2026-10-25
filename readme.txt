@@ -1,10 +1,10 @@
-=== Afrit Backup Manager ===
+=== Eikvakt Backup Manager ===
 Contributors: glogger
 Tags: backup, restore, migration, incremental backup, cloud backup
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Incremental backups, restores and migrations of the whole WordPress installation
 
 == Description ==
 
-Afrit Backup Manager ("afrit" is Icelandic for "copy") backs up your complete WordPress installation — core, plugins, themes, uploads, every other file and the database — restores any part of it on its own, and moves the site to a new domain or host.
+Eikvakt Backup Manager ("Eikvakt" is Norwegian for "oak guard") backs up your complete WordPress installation — core, plugins, themes, uploads, every other file and the database — restores any part of it on its own, and moves the site to a new domain or host.
 
 **Every feature is included. There is no PRO version, no upsell and no account to create. All free.**
 
@@ -79,21 +79,21 @@ Every backup, restore and migration is recorded: when it ran, what triggered it,
 
 **Open source**
 
-The complete source code, the developer documentation and the issue tracker are on GitHub: https://github.com/sglogger/afrit-backup-manager. The plugin ships no minified or compiled code.
+The complete source code, the developer documentation and the issue tracker are on GitHub: https://github.com/sglogger/eikvakt-backup-manager. The plugin ships no minified or compiled code.
 
 **WP-CLI**
 
-`wp afbm backup`, `restore`, `list`, `keep`, `migrate`, `prune`, `rescan` and `status`.
+`wp eikvakt backup`, `restore`, `list`, `keep`, `migrate`, `prune`, `rescan` and `status`.
 
 **About the name**
 
-"Afrit" is Icelandic for "copy", "duplicate" — the word Icelanders build their own term for a backup from: *öryggisafrit*, literally "safety copy". Which is fairly close to the entire job description: keep a good copy, and give it back the moment it is needed.
+"Eikvakt" (say "ayk-vahkt") joins two Norwegian words: *eik*, oak, and *vakt*, watch or guard — the oak guard. Oak for what lasts, a guard for what keeps watch. Which is fairly close to the entire job description: watch over a good copy of your site, and give it back the moment it is needed.
 
 == External services ==
 
 This plugin connects to the following third-party services **only for storage destinations that an administrator has added and connected**. Nothing is sent anywhere until then.
 
-**Dropbox** (Dropbox, Inc.) — to store backup files in the administrator's Dropbox, in the app folder Apps/Afrit Backup Manager only. By default the connection uses the plugin's Dropbox app (listed in Dropbox under "Connected apps"); administrators can use their own Dropbox app instead. Data sent: the backup files (encrypted if encryption is enabled), their file names, and OAuth requests to authorise and refresh access. Access tokens are stored only on the site; the plugin author receives nothing and runs no server in between. Endpoints: www.dropbox.com, api.dropboxapi.com, content.dropboxapi.com.
+**Dropbox** (Dropbox, Inc.) — to store backup files in the administrator's Dropbox, in the app folder Apps/Eikvakt Backup Manager only. By default the connection uses the plugin's Dropbox app (listed in Dropbox under "Connected apps"); administrators can use their own Dropbox app instead. Data sent: the backup files (encrypted if encryption is enabled), their file names, and OAuth requests to authorise and refresh access. Access tokens are stored only on the site; the plugin author receives nothing and runs no server in between. Endpoints: www.dropbox.com, api.dropboxapi.com, content.dropboxapi.com.
 Terms of service: https://www.dropbox.com/terms — Privacy policy: https://www.dropbox.com/privacy
 
 **Microsoft OneDrive / Microsoft Graph** (Microsoft Corporation) — to store backup files in the app folder of the administrator's own OneDrive, using the administrator's own Microsoft Entra app registration. Data sent: the backup files (encrypted if encryption is enabled), their file names, and OAuth requests to authorise and refresh access. Endpoints: login.microsoftonline.com, graph.microsoft.com and the upload/download URLs Graph returns.
@@ -105,7 +105,7 @@ Terms of use: https://www.microsoft.com/servicesagreement — Privacy statement:
 
 The plugin also sends requests to its own site (loopback requests) to run backups in the background and to test that the backup directory cannot be downloaded over the web.
 
-The plugin author collects no data and operates no server for this plugin. Privacy policy: https://github.com/sglogger/afrit-backup-manager/blob/main/PRIVACY.md
+The plugin author collects no data and operates no server for this plugin. Privacy policy: https://github.com/sglogger/eikvakt-backup-manager/blob/main/PRIVACY.md
 
 == Installation ==
 
@@ -132,11 +132,11 @@ No. Backups and restores run in short steps (20 seconds by default) that continu
 
 = I forgot the plugin password. =
 
-Add `define( 'AFBM_DISABLE_PASSWORD', true );` to wp-config.php, set a new password under Settings → Security, then remove the line again.
+Add `define( 'EKBM_DISABLE_PASSWORD', true );` to wp-config.php, set a new password under Settings → Security, then remove the line again.
 
 = How do I make sure a particular backup is never deleted? =
 
-Press **Keep** next to it on the Backups screen (or run `wp afbm keep <id>`). Kept backups are exempt from every retention rule and do not count towards the limits. To delete a kept backup, remove the mark first.
+Press **Keep** next to it on the Backups screen (or run `wp eikvakt keep <id>`). Kept backups are exempt from every retention rule and do not count towards the limits. To delete a kept backup, remove the mark first.
 
 = I lost the encryption passphrase. =
 
@@ -168,6 +168,11 @@ Backups cover the whole network installation. Restoring individual sites of a ne
 
 == Changelog ==
 
+= 1.0.4 =
+* Changed: the plugin is now called Eikvakt Backup Manager (slug eikvakt-backup-manager). Settings, backups and migration keys of the earlier name are not carried over.
+* Changed: SFTP uses phpseclib 4.
+* Security: submitted settings forms are sanitised as a whole before any handler sees them.
+
 = 1.0.3 =
 * Changed: smaller, cleaner package — an unused PHP 5 compatibility library and build files of bundled libraries are no longer included.
 
@@ -189,6 +194,9 @@ Backups cover the whole network installation. Restoring individual sites of a ne
 * First release.
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+New name and slug: Eikvakt Backup Manager. phpseclib 4 for SFTP.
 
 = 1.0.3 =
 Packaging clean-up, no functional changes. Safe to update.

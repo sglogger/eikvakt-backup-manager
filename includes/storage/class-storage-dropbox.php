@@ -5,7 +5,7 @@
  * Two ways to connect:
  *
  *   Plugin app (default)  The plugin's own registered Dropbox app, shown to
- *                         the user as "Afrit Backup Manager" under Connected
+ *                         the user as "Eikvakt Backup Manager" under Connected
  *                         apps. Dropbox only redirects to pre-registered
  *                         URLs and every WordPress site has a different one,
  *                         so this uses Dropbox's no-redirect flow: after
@@ -27,12 +27,12 @@
  * destination the administrator has configured and connected. See readme.txt
  * "External services".
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -48,9 +48,9 @@ final class Storage_Dropbox implements Storage_Driver {
 	 * App key of the plugin's registered Dropbox app. Public by design (it
 	 * identifies the app; PKCE replaces the secret). Empty until the app is
 	 * registered — the "own app" mode is then the only option. The key of
-	 * the registered app "Afrit Backup Manager" (App folder, PKCE). Can be
-	 * overridden with the AFBM_DROPBOX_APP_KEY constant or the
-	 * `afbm_dropbox_app_key` filter.
+	 * the registered app "Eikvakt Backup Manager" (App folder, PKCE). Can be
+	 * overridden with the EKBM_DROPBOX_APP_KEY constant or the
+	 * `ekbm_dropbox_app_key` filter.
 	 */
 	public const PLUGIN_APP_KEY = 'kmqwpqsfux9ldf9';
 
@@ -68,14 +68,14 @@ final class Storage_Dropbox implements Storage_Driver {
 	}
 
 	public static function plugin_app_key(): string {
-		$key = defined( 'AFBM_DROPBOX_APP_KEY' ) ? (string) AFBM_DROPBOX_APP_KEY : self::PLUGIN_APP_KEY;
+		$key = defined( 'EKBM_DROPBOX_APP_KEY' ) ? (string) EKBM_DROPBOX_APP_KEY : self::PLUGIN_APP_KEY;
 
 		/**
 		 * Filters the app key of the built-in Dropbox app.
 		 *
 		 * @param string $key App key ('' = no built-in app).
 		 */
-		return trim( (string) apply_filters( 'afbm_dropbox_app_key', $key ) );
+		return trim( (string) apply_filters( 'ekbm_dropbox_app_key', $key ) );
 	}
 
 	/**
@@ -166,7 +166,7 @@ final class Storage_Dropbox implements Storage_Driver {
 
 	private function token(): string {
 		if ( empty( $this->config['refresh_token'] ) ) {
-			throw new \RuntimeException( esc_html__( 'This Dropbox destination is not connected yet. Use "Connect" on the Storage tab.', 'afrit-backup-manager' ) );
+			throw new \RuntimeException( esc_html__( 'This Dropbox destination is not connected yet. Use "Connect" on the Storage tab.', 'eikvakt-backup-manager' ) );
 		}
 
 		return OAuth::access_token(
@@ -190,7 +190,7 @@ final class Storage_Dropbox implements Storage_Driver {
 				$data     = json_decode( $response['body'], true );
 
 				if ( 200 !== $response['code'] || empty( $data['access_token'] ) ) {
-					throw new \RuntimeException( esc_html__( 'Dropbox refused to renew access. Reconnect the destination.', 'afrit-backup-manager' ) );
+					throw new \RuntimeException( esc_html__( 'Dropbox refused to renew access. Reconnect the destination.', 'eikvakt-backup-manager' ) );
 				}
 
 				return [ (string) $data['access_token'], (int) ( $data['expires_in'] ?? 14400 ) ];
@@ -263,7 +263,7 @@ final class Storage_Dropbox implements Storage_Driver {
 
 	public function test() {
 		try {
-			$name = 'afbm-test-' . Util::random_token( 4 ) . '.txt';
+			$name = 'ekbm-test-' . Util::random_token( 4 ) . '.txt';
 			$res  = $this->content(
 				'files/upload',
 				[
@@ -274,12 +274,12 @@ final class Storage_Dropbox implements Storage_Driver {
 				'ok'
 			);
 			if ( 200 !== $res['code'] ) {
-				return new \WP_Error( 'afbm_dropbox', 'Dropbox: ' . $res['body'] );
+				return new \WP_Error( 'ekbm_dropbox', 'Dropbox: ' . $res['body'] );
 			}
 			$this->delete( $name );
 			return true;
 		} catch ( \Throwable $e ) {
-			return new \WP_Error( 'afbm_dropbox', Util::message( $e ) );
+			return new \WP_Error( 'ekbm_dropbox', Util::message( $e ) );
 		}
 	}
 

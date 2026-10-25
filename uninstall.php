@@ -6,7 +6,7 @@
  * Settings → General → Uninstall. Backups on this server are a second,
  * separate opt-in; backups on remote destinations are never touched.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
@@ -21,4 +21,4 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/class-util.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-paths.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-installer.php';
 
-\AfritBackupManager\Installer::uninstall();
+\EikvaktBackupManager\Installer::uninstall();

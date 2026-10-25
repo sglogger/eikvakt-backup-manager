@@ -4,7 +4,7 @@
  *
  * Format (all integers big-endian):
  *
- *   header  "AFBMENC1" | kdf:u8 | salt:16 | iterations:u32 | reserved:u32
+ *   header  "EKBMENC1" | kdf:u8 | salt:16 | iterations:u32 | reserved:u32
  *   chunk   final:u8 | nonce:24 | length:u32 | ciphertext (≤ 1 MiB + 16-byte tag)
  *
  * Every chunk is sealed with XChaCha20-Poly1305 (libsodium; WordPress ships
@@ -21,12 +21,12 @@
  *
  * Free of WordPress: unit-tested on its own.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Encryptor {
 
-	public const MAGIC      = 'AFBMENC1';
+	public const MAGIC      = 'EKBMENC1';
 	public const EXTENSION  = '.enc';
 	public const KDF_PBKDF2 = 2;
 

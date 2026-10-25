@@ -1,4 +1,4 @@
-# Local development environment for Afrit Backup Manager.
+# Local development environment for Eikvakt Backup Manager.
 #
 # Copy to docker-compose.yml (which is gitignored) and adjust ports if they
 # clash with another project. `cp .env.example .env` first if you want to
@@ -27,9 +27,9 @@ x-wp-config-extra: &wp-config-extra |
   define('SCRIPT_DEBUG', true);
   define('WP_ENVIRONMENT_TYPE', 'local');
   // App key of the plugin's own Dropbox app (see docs/storage-drivers.md).
-  if ( getenv('AFBM_DROPBOX_APP_KEY') ) { define('AFBM_DROPBOX_APP_KEY', getenv('AFBM_DROPBOX_APP_KEY')); }
+  if ( getenv('EKBM_DROPBOX_APP_KEY') ) { define('EKBM_DROPBOX_APP_KEY', getenv('EKBM_DROPBOX_APP_KEY')); }
   // Uncomment if you locked yourself out with the plugin password:
-  // define('AFBM_DISABLE_PASSWORD', true);
+  // define('EKBM_DISABLE_PASSWORD', true);
 
 x-source-env: &source-env
   WORDPRESS_DB_HOST: db:3306
@@ -40,7 +40,7 @@ x-source-env: &source-env
   WORDPRESS_CONFIG_EXTRA: *wp-config-extra
   WP_PORT: ${WP_PORT:-9190}
   WP_TARGET_PORT: ${WP_TARGET_PORT:-9192}
-  AFBM_DROPBOX_APP_KEY: ${AFBM_DROPBOX_APP_KEY:-}
+  EKBM_DROPBOX_APP_KEY: ${EKBM_DROPBOX_APP_KEY:-}
 
 # A second, independent site to test migrations against. Different table
 # prefix on purpose, so prefix rewriting is exercised too.
@@ -54,7 +54,7 @@ x-target-env: &target-env
   WORDPRESS_CONFIG_EXTRA: *wp-config-extra
   WP_PORT: ${WP_PORT:-9190}
   WP_TARGET_PORT: ${WP_TARGET_PORT:-9192}
-  AFBM_DROPBOX_APP_KEY: ${AFBM_DROPBOX_APP_KEY:-}
+  EKBM_DROPBOX_APP_KEY: ${EKBM_DROPBOX_APP_KEY:-}
 
 services:
   db:
@@ -77,7 +77,7 @@ services:
     build:
       context: ./dev/docker
       dockerfile: wordpress.Dockerfile
-    image: afrit-dev/wordpress:php8.2
+    image: eikvakt-dev/wordpress:php8.2
     depends_on:
       db:
         condition: service_healthy
@@ -87,11 +87,11 @@ services:
     environment: *source-env
     volumes:
       - ./local_wp_core:/var/www/html
-      - .:/var/www/html/wp-content/plugins/afrit-backup-manager
+      - .:/var/www/html/wp-content/plugins/eikvakt-backup-manager
       - ./dev/mu-plugins:/var/www/html/wp-content/mu-plugins
 
   wordpress-target:
-    image: afrit-dev/wordpress:php8.2
+    image: eikvakt-dev/wordpress:php8.2
     depends_on:
       db:
         condition: service_healthy
@@ -101,7 +101,7 @@ services:
     environment: *target-env
     volumes:
       - ./local_wp_target:/var/www/html
-      - .:/var/www/html/wp-content/plugins/afrit-backup-manager
+      - .:/var/www/html/wp-content/plugins/eikvakt-backup-manager
       - ./dev/mu-plugins:/var/www/html/wp-content/mu-plugins
 
   # The official `wordpress` image does NOT bundle WP-CLI — only the separate
@@ -111,7 +111,7 @@ services:
     build:
       context: ./dev/docker
       dockerfile: wpcli.Dockerfile
-    image: afrit-dev/wpcli:php8.2
+    image: eikvakt-dev/wpcli:php8.2
     depends_on:
       db:
         condition: service_healthy
@@ -121,11 +121,11 @@ services:
     environment: *source-env
     volumes:
       - ./local_wp_core:/var/www/html
-      - .:/var/www/html/wp-content/plugins/afrit-backup-manager
+      - .:/var/www/html/wp-content/plugins/eikvakt-backup-manager
       - ./dev/mu-plugins:/var/www/html/wp-content/mu-plugins
 
   wpcli-target:
-    image: afrit-dev/wpcli:php8.2
+    image: eikvakt-dev/wpcli:php8.2
     depends_on:
       db:
         condition: service_healthy
@@ -135,7 +135,7 @@ services:
     environment: *target-env
     volumes:
       - ./local_wp_target:/var/www/html
-      - .:/var/www/html/wp-content/plugins/afrit-backup-manager
+      - .:/var/www/html/wp-content/plugins/eikvakt-backup-manager
       - ./dev/mu-plugins:/var/www/html/wp-content/mu-plugins
 
   # FTP / FTPS test server. FTPS uses a self-signed certificate; create it

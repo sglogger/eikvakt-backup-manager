@@ -2,12 +2,12 @@
 /**
  * Reports: every backup, restore and import that ran.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,8 +22,8 @@ final class Runs_List_Table extends \WP_List_Table {
 	public function __construct() {
 		parent::__construct(
 			[
-				'singular' => 'afbm-run',
-				'plural'   => 'afbm-runs',
+				'singular' => 'ekbm-run',
+				'plural'   => 'ekbm-runs',
 				'ajax'     => false,
 			]
 		);
@@ -34,12 +34,12 @@ final class Runs_List_Table extends \WP_List_Table {
 	 */
 	public function get_columns(): array {
 		return [
-			'started_at' => __( 'Started', 'afrit-backup-manager' ),
-			'kind'       => __( 'Job', 'afrit-backup-manager' ),
-			'status'     => __( 'Result', 'afrit-backup-manager' ),
-			'components' => __( 'Included', 'afrit-backup-manager' ),
-			'size'       => __( 'Size', 'afrit-backup-manager' ),
-			'duration'   => __( 'Duration', 'afrit-backup-manager' ),
+			'started_at' => __( 'Started', 'eikvakt-backup-manager' ),
+			'kind'       => __( 'Job', 'eikvakt-backup-manager' ),
+			'status'     => __( 'Result', 'eikvakt-backup-manager' ),
+			'components' => __( 'Included', 'eikvakt-backup-manager' ),
+			'size'       => __( 'Size', 'eikvakt-backup-manager' ),
+			'duration'   => __( 'Duration', 'eikvakt-backup-manager' ),
 			'details'    => '',
 		];
 	}
@@ -65,7 +65,7 @@ final class Runs_List_Table extends \WP_List_Table {
 	}
 
 	public function no_items(): void {
-		esc_html_e( 'Nothing has run yet.', 'afrit-backup-manager' );
+		esc_html_e( 'Nothing has run yet.', 'eikvakt-backup-manager' );
 	}
 
 	/**
@@ -82,7 +82,7 @@ final class Runs_List_Table extends \WP_List_Table {
 				'<a href="%s"%s>%s</a>',
 				esc_url( '' === $status ? $base : add_query_arg( 'status', $status, $base ) ),
 				$current === $status ? ' class="current" aria-current="page"' : '',
-				esc_html( '' === $status ? __( 'All', 'afrit-backup-manager' ) : Run_Repository::status_label( $status ) )
+				esc_html( '' === $status ? __( 'All', 'eikvakt-backup-manager' ) : Run_Repository::status_label( $status ) )
 			);
 		}
 
@@ -104,7 +104,7 @@ final class Runs_List_Table extends \WP_List_Table {
 		if ( '' !== (string) $item['backup_type'] ) {
 			$out .= ' ' . Admin::badge( Admin::type_label( (string) $item['backup_type'] ), Admin::type_color( (string) $item['backup_type'] ) );
 		}
-		$out .= '<br><span class="afbm-muted">' . esc_html( Run_Repository::trigger_label( (string) $item['run_trigger'] ) ) . '</span>';
+		$out .= '<br><span class="ekbm-muted">' . esc_html( Run_Repository::trigger_label( (string) $item['run_trigger'] ) ) . '</span>';
 		return $out;
 	}
 
@@ -139,11 +139,11 @@ final class Runs_List_Table extends \WP_List_Table {
 
 		if ( (int) $item['table_count'] > 0 ) {
 			/* translators: %d: number of tables */
-			$out .= '<br><span class="afbm-muted">' . esc_html( sprintf( _n( '%d table', '%d tables', (int) $item['table_count'], 'afrit-backup-manager' ), (int) $item['table_count'] ) ) . '</span>';
+			$out .= '<br><span class="ekbm-muted">' . esc_html( sprintf( _n( '%d table', '%d tables', (int) $item['table_count'], 'eikvakt-backup-manager' ), (int) $item['table_count'] ) ) . '</span>';
 		}
 		if ( (int) $item['file_count'] > 0 ) {
 			/* translators: %s: number of files */
-			$out .= '<br><span class="afbm-muted">' . esc_html( sprintf( __( '%s files', 'afrit-backup-manager' ), number_format_i18n( (int) $item['file_count'] ) ) ) . '</span>';
+			$out .= '<br><span class="ekbm-muted">' . esc_html( sprintf( __( '%s files', 'eikvakt-backup-manager' ), number_format_i18n( (int) $item['file_count'] ) ) ) . '</span>';
 		}
 
 		return $out;
@@ -174,7 +174,7 @@ final class Runs_List_Table extends \WP_List_Table {
 		return sprintf(
 			'<a href="%s">%s</a>',
 			esc_url( add_query_arg( 'run', (int) $item['id'], admin_url( 'admin.php?page=' . Admin::MENU_REPORTS ) ) ),
-			esc_html__( 'Details', 'afrit-backup-manager' )
+			esc_html__( 'Details', 'eikvakt-backup-manager' )
 		);
 	}
 }

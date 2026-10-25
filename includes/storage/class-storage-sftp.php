@@ -8,12 +8,12 @@
  * every later one, so a man-in-the-middle cannot silently receive the
  * backups.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,7 +26,7 @@ final class Storage_Sftp implements Storage_Driver {
 	/** @var array<string, mixed> */
 	private array $config;
 
-	/** @var \phpseclib3\Net\SFTP|null */
+	/** @var \phpseclib4\Net\SFTP|null */
 	private $sftp = null;
 
 	/** Fingerprint seen on the last connection, for pinning by the caller. */
@@ -40,11 +40,11 @@ final class Storage_Sftp implements Storage_Driver {
 	}
 
 	public static function is_available(): bool {
-		return is_readable( AFBM_DIR . 'vendor/autoload.php' );
+		return is_readable( EKBM_DIR . 'vendor/autoload.php' );
 	}
 
 	/**
-	 * @return \phpseclib3\Net\SFTP
+	 * @return \phpseclib4\Net\SFTP
 	 */
 	private function connect() {
 		if ( null !== $this->sftp ) {
@@ -52,18 +52,18 @@ final class Storage_Sftp implements Storage_Driver {
 		}
 
 		if ( ! self::is_available() ) {
-			throw new \RuntimeException( esc_html__( 'The SFTP library is missing from the plugin. Reinstall the plugin.', 'afrit-backup-manager' ) );
+			throw new \RuntimeException( esc_html__( 'The SFTP library is missing from the plugin. Reinstall the plugin.', 'eikvakt-backup-manager' ) );
 		}
 
-		require_once AFBM_DIR . 'vendor/autoload.php';
+		require_once EKBM_DIR . 'vendor/autoload.php';
 
 		$host = (string) ( $this->config['host'] ?? '' );
-		$sftp = new \phpseclib3\Net\SFTP( $host, (int) ( $this->config['port'] ?? 22 ), 20 );
+		$sftp = new \phpseclib4\Net\SFTP( $host, (int) ( $this->config['port'] ?? 22 ), 20 );
 
 		$fingerprint = (string) $sftp->getServerPublicHostKey();
 		if ( '' === $fingerprint ) {
 			/* translators: %s: host name */
-			throw new \RuntimeException( esc_html( sprintf( __( 'Could not connect to %s.', 'afrit-backup-manager' ), $host ) ) );
+			throw new \RuntimeException( esc_html( sprintf( __( 'Could not connect to %s.', 'eikvakt-backup-manager' ), $host ) ) );
 		}
 
 		$this->fingerprint = 'SHA256:' . rtrim( base64_encode( hash( 'sha256', $fingerprint, true ) ), '=' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- OpenSSH fingerprint notation.
@@ -74,7 +74,7 @@ final class Storage_Sftp implements Storage_Driver {
 				esc_html(
 					sprintf(
 						/* translators: 1: expected fingerprint, 2: received fingerprint */
-						__( 'The server\'s host key has changed (expected %1$s, got %2$s). Nothing was sent. If the change is expected, clear the fingerprint in the destination settings.', 'afrit-backup-manager' ),
+						__( 'The server\'s host key has changed (expected %1$s, got %2$s). Nothing was sent. If the change is expected, clear the fingerprint in the destination settings.', 'eikvakt-backup-manager' ),
 						$pinned,
 						$this->fingerprint
 					)
@@ -87,9 +87,9 @@ final class Storage_Sftp implements Storage_Driver {
 
 		if ( '' !== $key_text ) {
 			try {
-				$key = \phpseclib3\Crypt\PublicKeyLoader::load( $key_text, (string) ( $this->config['key_passphrase'] ?? '' ) ?: false );
+				$key = \phpseclib4\Crypt\PublicKeyLoader::load( $key_text, (string) ( $this->config['key_passphrase'] ?? '' ) ?: null );
 			} catch ( \Throwable $e ) {
-				throw new \RuntimeException( esc_html__( 'The private key could not be read. Check the key and its passphrase.', 'afrit-backup-manager' ) );
+				throw new \RuntimeException( esc_html__( 'The private key could not be read. Check the key and its passphrase.', 'eikvakt-backup-manager' ) );
 			}
 			$ok = $sftp->login( $username, $key );
 		} else {
@@ -97,7 +97,7 @@ final class Storage_Sftp implements Storage_Driver {
 		}
 
 		if ( ! $ok ) {
-			throw new \RuntimeException( esc_html__( 'The SFTP server rejected the login.', 'afrit-backup-manager' ) );
+			throw new \RuntimeException( esc_html__( 'The SFTP server rejected the login.', 'eikvakt-backup-manager' ) );
 		}
 
 		$dir = $this->dir();
@@ -128,14 +128,16 @@ final class Storage_Sftp implements Storage_Driver {
 	public function test() {
 		try {
 			$sftp = $this->connect();
-			$name = $this->remote( 'afbm-test-' . Util::random_token( 4 ) . '.txt' );
-			if ( ! $sftp->put( $name, 'ok' ) ) {
-				return new \WP_Error( 'afbm_sftp', __( 'Connected, but the folder is not writable.', 'afrit-backup-manager' ) );
+			$name = $this->remote( 'ekbm-test-' . Util::random_token( 4 ) . '.txt' );
+			try {
+				$sftp->put( $name, 'ok' );
+			} catch ( \Throwable $e ) {
+				return new \WP_Error( 'ekbm_sftp', __( 'Connected, but the folder is not writable.', 'eikvakt-backup-manager' ) );
 			}
-			$sftp->delete( $name );
+			$sftp->delete( $name, false );
 			return true;
 		} catch ( \Throwable $e ) {
-			return new \WP_Error( 'afbm_sftp', Util::message( $e ) );
+			return new \WP_Error( 'ekbm_sftp', Util::message( $e ) );
 		}
 	}
 
@@ -147,8 +149,8 @@ final class Storage_Sftp implements Storage_Driver {
 
 		// phpseclib writes at an offset without truncating, so a stale file of
 		// the same name must go before the first chunk.
-		if ( 0 === $offset ) {
-			$sftp->delete( $remote );
+		if ( 0 === $offset && $sftp->file_exists( $remote ) ) {
+			$sftp->delete( $remote, false );
 		}
 
 		$handle = fopen( $local, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- streaming a local archive.
@@ -163,9 +165,11 @@ final class Storage_Sftp implements Storage_Driver {
 			if ( '' === $chunk && $offset < $size ) {
 				break;
 			}
-			if ( ! $sftp->put( $remote, $chunk, \phpseclib3\Net\SFTP::SOURCE_STRING, $offset ) ) {
+			try {
+				$sftp->put( $remote, $chunk, \phpseclib4\Net\SFTP::SOURCE_STRING, $offset );
+			} catch ( \Throwable $e ) {
 				fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- streaming a local archive.
-				throw new \RuntimeException( esc_html__( 'The SFTP upload failed.', 'afrit-backup-manager' ) );
+				throw new \RuntimeException( esc_html__( 'The SFTP upload failed.', 'eikvakt-backup-manager' ) );
 			}
 			$offset += strlen( $chunk );
 		} while ( $offset < $size && microtime( true ) < $deadline );
@@ -191,10 +195,14 @@ final class Storage_Sftp implements Storage_Driver {
 		}
 
 		while ( $offset < $size && microtime( true ) < $deadline ) {
-			$chunk = $sftp->get( $remote, false, $offset, self::CHUNK );
+			try {
+				$chunk = $sftp->get( $remote, null, $offset, self::CHUNK );
+			} catch ( \Throwable $e ) {
+				$chunk = null;
+			}
 			if ( ! is_string( $chunk ) || '' === $chunk ) {
 				fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- streaming into the work directory.
-				throw new \RuntimeException( esc_html__( 'The SFTP download failed.', 'afrit-backup-manager' ) );
+				throw new \RuntimeException( esc_html__( 'The SFTP download failed.', 'eikvakt-backup-manager' ) );
 			}
 			fwrite( $handle, $chunk ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- streaming into the work directory.
 			$offset += strlen( $chunk );
@@ -221,13 +229,24 @@ final class Storage_Sftp implements Storage_Driver {
 	}
 
 	public function get_contents( string $name ): string {
-		$contents = $this->connect()->get( $this->remote( $name ) );
+		$sftp   = $this->connect();
+		$remote = $this->remote( $name );
+		try {
+			$contents = $sftp->get( $remote );
+		} catch ( \Throwable $e ) {
+			$contents = null;
+		}
 		return is_string( $contents ) ? $contents : '';
 	}
 
 	public function delete( string $name ): bool {
 		$sftp   = $this->connect();
 		$remote = $this->remote( $name );
-		return $sftp->delete( $remote ) || ! $sftp->file_exists( $remote );
+		try {
+			$sftp->delete( $remote, false );
+			return true;
+		} catch ( \Throwable $e ) {
+			return ! $sftp->file_exists( $remote );
+		}
 	}
 }

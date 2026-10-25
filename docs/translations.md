@@ -1,6 +1,6 @@
 # Translations
 
-* Source strings are English, text domain `afrit-backup-manager`.
+* Source strings are English, text domain `eikvakt-backup-manager`.
 * No `load_plugin_textdomain()`: WordPress loads translations just in time,
   and WordPress.org delivers them to `wp-content/languages/plugins/`.
 * No `.po/.mo` files ship in the ZIP (`package-plugin.sh` fails if one does).
@@ -9,24 +9,24 @@
 
 | File | Purpose |
 |---|---|
-| `languages/afrit-backup-manager.pot` | template, regenerated before each release |
-| `dev/translations/afrit-backup-manager-de_DE.po` | German (informal "du", WordPress de_DE glossary), to import into translate.wordpress.org |
+| `languages/eikvakt-backup-manager.pot` | template, regenerated before each release |
+| `dev/translations/eikvakt-backup-manager-de_DE.po` | German (informal "du", WordPress de_DE glossary), to import into translate.wordpress.org |
 
 ## Regenerate the template
 
 ```sh
-docker compose exec wpcli wp i18n make-pot wp-content/plugins/afrit-backup-manager \
-  wp-content/plugins/afrit-backup-manager/languages/afrit-backup-manager.pot \
+docker compose exec wpcli wp i18n make-pot wp-content/plugins/eikvakt-backup-manager \
+  wp-content/plugins/eikvakt-backup-manager/languages/eikvakt-backup-manager.pot \
   --exclude=vendor,local_wp_core,local_wp_target,db_data,dev,tests,docs,dist,node_modules
 ```
 
-Then merge into the German file (`msgmerge --update dev/translations/afrit-backup-manager-de_DE.po languages/afrit-backup-manager.pot`) and translate new entries.
+Then merge into the German file (`msgmerge --update dev/translations/eikvakt-backup-manager-de_DE.po languages/eikvakt-backup-manager.pot`) and translate new entries.
 
 ## Test German locally
 
 ```sh
 docker compose exec wpcli wp language core install de_DE
-docker compose exec wpcli wp i18n make-mo wp-content/plugins/afrit-backup-manager/dev/translations/afrit-backup-manager-de_DE.po wp-content/languages/plugins/
+docker compose exec wpcli wp i18n make-mo wp-content/plugins/eikvakt-backup-manager/dev/translations/eikvakt-backup-manager-de_DE.po wp-content/languages/plugins/
 docker compose exec wpcli wp user meta update admin locale de_DE
 ```
 

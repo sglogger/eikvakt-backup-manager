@@ -17,12 +17,12 @@
  * Only one step runs at a time (flock in Job_Store); duplicate kicks are
  * harmless and simply return.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -51,8 +51,8 @@ final class Job_Runner {
 	public function register(): void {
 		add_filter( 'cron_schedules', [ Installer::class, 'cron_intervals' ] ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- five minutes, see Installer::cron_intervals().
 		add_action( Installer::CRON_JOB_TICK, [ $this, 'cron_tick' ] );
-		add_action( 'wp_ajax_afbm_tick', [ $this, 'loopback_tick' ] );
-		add_action( 'wp_ajax_nopriv_afbm_tick', [ $this, 'loopback_tick' ] );
+		add_action( 'wp_ajax_ekbm_tick', [ $this, 'loopback_tick' ] );
+		add_action( 'wp_ajax_nopriv_ekbm_tick', [ $this, 'loopback_tick' ] );
 	}
 
 	/**
@@ -70,7 +70,7 @@ final class Job_Runner {
 		 *
 		 * @param array<string, class-string<Job_Handler>> $handlers Handlers.
 		 */
-		$handlers = (array) apply_filters( 'afbm_job_handlers', $handlers );
+		$handlers = (array) apply_filters( 'ekbm_job_handlers', $handlers );
 
 		return isset( $handlers[ $type ] ) ? new $handlers[ $type ]() : null;
 	}
@@ -327,7 +327,7 @@ final class Job_Runner {
 		 * @param array<string, mixed> $job    The job, including `result`.
 		 * @param string               $status success|warning|failed|cancelled.
 		 */
-		do_action( 'afbm_job_finished', $job, $status );
+		do_action( 'ekbm_job_finished', $job, $status );
 	}
 
 	private static function is_terminal( string $status ): bool {
@@ -395,11 +395,11 @@ final class Job_Runner {
 		 *
 		 * @param bool $enabled Default true.
 		 */
-		if ( ! apply_filters( 'afbm_use_loopback', true ) ) {
+		if ( ! apply_filters( 'ekbm_use_loopback', true ) ) {
 			return;
 		}
 
-		$url = add_query_arg( 'action', 'afbm_tick', admin_url( 'admin-ajax.php' ) );
+		$url = add_query_arg( 'action', 'ekbm_tick', admin_url( 'admin-ajax.php' ) );
 
 		wp_remote_post(
 			$url,
@@ -412,7 +412,7 @@ final class Job_Runner {
 				// with the core filter. The request carries an HMAC that only
 				// lets the receiver advance the job already queued.
 				'sslverify' => apply_filters( 'https_local_ssl_verify', false ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress core's own filter for loopback TLS verification.
-				'body'      => [ 'key' => hash_hmac( 'sha256', 'afbm-tick', Job_Store::runner_key() ) ],
+				'body'      => [ 'key' => hash_hmac( 'sha256', 'ekbm-tick', Job_Store::runner_key() ) ],
 			]
 		);
 	}
@@ -430,7 +430,7 @@ final class Job_Runner {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- authenticated by the HMAC below; there is no user session on a loopback.
 		$key = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['key'] ) ) : '';
 
-		if ( ! hash_equals( hash_hmac( 'sha256', 'afbm-tick', Job_Store::runner_key() ), $key ) ) {
+		if ( ! hash_equals( hash_hmac( 'sha256', 'ekbm-tick', Job_Store::runner_key() ), $key ) ) {
 			wp_die( '', '', [ 'response' => 403 ] );
 		}
 

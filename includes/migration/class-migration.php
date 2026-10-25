@@ -23,12 +23,12 @@
  * Dropbox, OneDrive, FTP or SFTP destination on both sites and use "Rescan"
  * on the target.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -36,13 +36,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Migration {
 
-	public const KEY_PREFIX = 'AFBM1-';
+	public const KEY_PREFIX = 'EKBM1-';
 	public const TTL        = DAY_IN_SECONDS;
 	public const CHUNK      = 8 * 1048576;
 
 	public function register(): void {
-		add_action( 'wp_ajax_nopriv_afbm_migrate', [ $this, 'endpoint' ] );
-		add_action( 'wp_ajax_afbm_migrate', [ $this, 'endpoint' ] );
+		add_action( 'wp_ajax_nopriv_ekbm_migrate', [ $this, 'endpoint' ] );
+		add_action( 'wp_ajax_ekbm_migrate', [ $this, 'endpoint' ] );
 	}
 
 	/**
@@ -195,7 +195,7 @@ final class Migration {
 
 		nocache_headers();
 		header( 'Content-Type: application/octet-stream' );
-		header( 'X-Afbm-Size: ' . $size );
+		header( 'X-Ekbm-Size: ' . $size );
 		header( 'Content-Length: ' . strlen( $data ) );
 		echo $data; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- binary file content, not HTML.
 		exit;

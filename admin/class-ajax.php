@@ -4,12 +4,12 @@
  * the job when loopbacks and WP-Cron do not) and chunked upload of backup
  * files from the administrator's computer.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -17,15 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Ajax {
 
-	public const NONCE = 'afbm_ajax';
+	public const NONCE = 'ekbm_ajax';
 
 	/** Per-poll working time: short, so the progress bar stays responsive. */
 	private const POLL_BUDGET = 8;
 
 	public function register(): void {
-		add_action( 'wp_ajax_afbm_status', [ $this, 'status' ] );
-		add_action( 'wp_ajax_afbm_upload', [ $this, 'upload' ] );
-		add_action( 'wp_ajax_afbm_tree', [ $this, 'tree' ] );
+		add_action( 'wp_ajax_ekbm_status', [ $this, 'status' ] );
+		add_action( 'wp_ajax_ekbm_upload', [ $this, 'upload' ] );
+		add_action( 'wp_ajax_ekbm_tree', [ $this, 'tree' ] );
 	}
 
 	private function guard(): void {
@@ -63,7 +63,7 @@ final class Ajax {
 			wp_send_json_success(
 				[
 					'children' => [
-						self::node( 'root', __( 'WordPress directory', 'afrit-backup-manager' ) . ' (' . untrailingslashit( wp_normalize_path( ABSPATH ) ) . ')', true ),
+						self::node( 'root', __( 'WordPress directory', 'eikvakt-backup-manager' ) . ' (' . untrailingslashit( wp_normalize_path( ABSPATH ) ) . ')', true ),
 						self::node( 'content', 'wp-content (' . untrailingslashit( wp_normalize_path( WP_CONTENT_DIR ) ) . ')', true ),
 					],
 				]
@@ -162,13 +162,13 @@ final class Ajax {
 
 		$id = (string) strtok( $name, '.' );
 		if ( ! Util::is_safe_filename( $name ) || ! Manifest::is_valid_id( $id ) ) {
-			wp_send_json_error( [ 'message' => __( 'This is not a file of an Afrit backup set.', 'afrit-backup-manager' ) ], 400 );
+			wp_send_json_error( [ 'message' => __( 'This is not a file of an Eikvakt backup set.', 'eikvakt-backup-manager' ) ], 400 );
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- verified in guard(); a binary upload, checked by size below.
 		$tmp = isset( $_FILES['chunk']['tmp_name'] ) ? (string) $_FILES['chunk']['tmp_name'] : '';
 		if ( '' === $tmp || ! is_uploaded_file( $tmp ) ) {
-			wp_send_json_error( [ 'message' => __( 'The upload did not arrive.', 'afrit-backup-manager' ) ], 400 );
+			wp_send_json_error( [ 'message' => __( 'The upload did not arrive.', 'eikvakt-backup-manager' ) ], 400 );
 		}
 
 		Paths::ensure();

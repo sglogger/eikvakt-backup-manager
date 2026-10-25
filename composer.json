@@ -1,5 +1,5 @@
 {
-	"name": "sglogger/afrit-backup-manager",
+	"name": "sglogger/eikvakt-backup-manager",
 	"description": "Backups, restores and migrations for the whole WordPress installation: incremental file backups, selectable database tables, encryption, scheduling, retention rules and simultaneous upload to this server, FTP, SFTP, Dropbox and OneDrive. There is no PRO version. All free.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
@@ -12,7 +12,7 @@
 	"require": {
 		"php": ">=8.1",
 		"ext-json": "*",
-		"phpseclib/phpseclib": "^3.0"
+		"phpseclib/phpseclib": "^4.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^10.5",
@@ -35,7 +35,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"AfritBackupManager\\Tests\\": "tests/"
+			"EikvaktBackupManager\\Tests\\": "tests/"
 		}
 	},
 	"config": {

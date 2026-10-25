@@ -6,7 +6,7 @@
  * Lives OUTSIDE the plugin directory (dev/mu-plugins/, mounted only by
  * docker-compose) and is excluded from the release ZIP. It must never ship.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_filter(
 	'pre_http_request',
 	static function ( $response, array $args, string $url ) {
-		if ( 'local' !== wp_get_environment_type() || ! empty( $args['_afbm_dev_rewritten'] ) ) {
+		if ( 'local' !== wp_get_environment_type() || ! empty( $args['_ekbm_dev_rewritten'] ) ) {
 			return $response;
 		}
 
@@ -34,7 +34,7 @@ add_filter(
 			return $response;
 		}
 
-		$args['_afbm_dev_rewritten'] = true;
+		$args['_ekbm_dev_rewritten'] = true;
 		$args['headers']             = (array) ( $args['headers'] ?? [] );
 		$args['headers']['Host']     = $key;
 

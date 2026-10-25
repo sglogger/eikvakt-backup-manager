@@ -5,12 +5,12 @@
  * Every backup is written here first; the other destinations receive copies.
  * Whether the local copy is kept afterwards is a setting.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -29,7 +29,7 @@ final class Storage_Local implements Storage_Driver {
 
 	public function test() {
 		if ( ! Paths::ensure() || ! wp_is_writable( Paths::backup_dir() ) ) {
-			return new \WP_Error( 'afbm_local', __( 'The backup directory is not writable.', 'afrit-backup-manager' ) );
+			return new \WP_Error( 'ekbm_local', __( 'The backup directory is not writable.', 'eikvakt-backup-manager' ) );
 		}
 		return true;
 	}

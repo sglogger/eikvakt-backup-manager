@@ -39,9 +39,9 @@ interface Storage_Driver {
 ### Dropbox: built-in app (default) — code paste, no redirect
 
 The plugin ships the **public app key** of its own registered Dropbox app
-(`Storage_Dropbox::PLUGIN_APP_KEY`, overridable with the `AFBM_DROPBOX_APP_KEY`
-constant or the `afbm_dropbox_app_key` filter). Users then see
-"Afrit Backup Manager" under Dropbox → Settings → Apps → Connected apps, like
+(`Storage_Dropbox::PLUGIN_APP_KEY`, overridable with the `EKBM_DROPBOX_APP_KEY`
+constant or the `ekbm_dropbox_app_key` filter). Users then see
+"Eikvakt Backup Manager" under Dropbox → Settings → Apps → Connected apps, like
 any other backup app, and never touch the Dropbox developer console.
 
 Dropbox only redirects to pre-registered URLs, and every WordPress site has a
@@ -64,8 +64,8 @@ different one. Instead of a relay server, the plugin uses Dropbox's
 **Registering the built-in app (once, plugin author):**
 
 1. https://www.dropbox.com/developers/apps/create → *Scoped access* →
-   *App folder* → name **Afrit Backup Manager** (the folder becomes
-   `Apps/Afrit Backup Manager`).
+   *App folder* → name **Eikvakt Backup Manager** (the folder becomes
+   `Apps/Eikvakt Backup Manager`).
 2. *Permissions*: `files.metadata.read`, `files.metadata.write`,
    `files.content.read`, `files.content.write` → *Submit*.
 3. *Settings*: leave *Allow public clients (Implicit Grant & PKCE)* on *Allow*;
@@ -93,7 +93,7 @@ different one. Instead of a relay server, the plugin uses Dropbox's
 ```php
 [ 'id' => 'd1a2b3c4', 'type' => 'sftp', 'name' => 'Backup box', 'enabled' => true,
   'retention_days' => 0,           // 0 = Retention tab "remote" default
-  'config' => [ 'host' => …, 'password' => 'afbm1:…sealed…', … ] ]
+  'config' => [ 'host' => …, 'password' => 'ekbm1:…sealed…', … ] ]
 ```
 
 `Destinations::types()` declares fields and which are secret; secret fields are

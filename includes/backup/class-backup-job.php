@@ -16,12 +16,12 @@
  * only once everything else is in place, so an interrupted backup never
  * looks restorable.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -93,7 +93,7 @@ final class Backup_Job implements Job_Handler {
 
 		$manifest = new Manifest(
 			[
-				'format'     => AFBM_FORMAT_VERSION,
+				'format'     => EKBM_FORMAT_VERSION,
 				'id'         => $id,
 				'type'       => $type,
 				'parent'     => null !== $parent ? $parent->id() : '',
@@ -117,7 +117,7 @@ final class Backup_Job implements Job_Handler {
 					'wp_version'   => get_bloginfo( 'version' ),
 					'php_version'  => PHP_VERSION,
 					'multisite'    => is_multisite(),
-					'plugin'       => AFBM_VERSION,
+					'plugin'       => EKBM_VERSION,
 					'charset'      => $wpdb->charset,
 					// Identifies backups made by this installation, so retention
 					// never deletes another site's backups on shared storage.
@@ -222,7 +222,7 @@ final class Backup_Job implements Job_Handler {
 
 				$job['message'] = sprintf(
 					/* translators: %s: number of files */
-					__( 'Scanning files: %s found', 'afrit-backup-manager' ),
+					__( 'Scanning files: %s found', 'eikvakt-backup-manager' ),
 					number_format_i18n( (int) $state['scan']['files'] )
 				);
 
@@ -280,7 +280,7 @@ final class Backup_Job implements Job_Handler {
 				$total          = max( 1, (int) ( $state['stats']['changed'] ?? 1 ) );
 				$job['message'] = sprintf(
 					/* translators: 1: files archived, 2: total files */
-					__( 'Archiving files: %1$s of %2$s', 'afrit-backup-manager' ),
+					__( 'Archiving files: %1$s of %2$s', 'eikvakt-backup-manager' ),
 					number_format_i18n( (int) $state['archive']['added'] ),
 					number_format_i18n( $total )
 				);
@@ -316,7 +316,7 @@ final class Backup_Job implements Job_Handler {
 
 				$job['message'] = sprintf(
 					/* translators: 1: table number, 2: total tables */
-					__( 'Exporting database: table %1$d of %2$d', 'afrit-backup-manager' ),
+					__( 'Exporting database: table %1$d of %2$d', 'eikvakt-backup-manager' ),
 					min( count( $manifest->tables() ), (int) $state['dump']['table'] + 1 ),
 					count( $manifest->tables() )
 				);
@@ -331,7 +331,7 @@ final class Backup_Job implements Job_Handler {
 			case 'encrypt':
 				$state = self::encrypt_step( $state, $manifest, $deadline );
 				if ( 'encrypt' === $state['phase'] ) {
-					$job['message'] = __( 'Encrypting', 'afrit-backup-manager' );
+					$job['message'] = __( 'Encrypting', 'eikvakt-backup-manager' );
 				} elseif ( $manifest->is_encrypted() ) {
 					$job = Job_Runner::log( $job, $manifest->data['enc_files'] ? 'Database and file archives encrypted.' : 'Database encrypted.' );
 				}
@@ -352,7 +352,7 @@ final class Backup_Job implements Job_Handler {
 				}
 
 				$state['upload'] = Transfer::upload_step( (array) $state['upload'], Paths::backup_dir(), $deadline );
-				$job['message']  = __( 'Uploading to storage destinations', 'afrit-backup-manager' );
+				$job['message']  = __( 'Uploading to storage destinations', 'eikvakt-backup-manager' );
 
 				if ( Transfer::is_finished( (array) $state['upload'] ) ) {
 					foreach ( (array) $state['upload']['targets'] as $id => $target ) {
@@ -582,7 +582,7 @@ final class Backup_Job implements Job_Handler {
 
 		$job['message'] = sprintf(
 			/* translators: %s: archive size */
-			__( 'Backup complete (%s).', 'afrit-backup-manager' ),
+			__( 'Backup complete (%s).', 'eikvakt-backup-manager' ),
 			Util::bytes( $manifest->total_size() )
 		);
 

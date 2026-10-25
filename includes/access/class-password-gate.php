@@ -12,15 +12,15 @@
  * with an HMAC over the site's salts; logging out or the timeout locks the
  * plugin again. Five wrong attempts lock the form for fifteen minutes.
  *
- * Locked out? Add `define( 'AFBM_DISABLE_PASSWORD', true );` to wp-config.php,
+ * Locked out? Add `define( 'EKBM_DISABLE_PASSWORD', true );` to wp-config.php,
  * reset the password on the Security tab, and remove the line again.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Password_Gate {
 
-	public const COOKIE = 'afbm_unlock';
+	public const COOKIE = 'ekbm_unlock';
 
 	private const MAX_ATTEMPTS = 5;
 	private const LOCKOUT      = 15 * MINUTE_IN_SECONDS;
@@ -39,7 +39,7 @@ final class Password_Gate {
 	}
 
 	public static function is_enabled(): bool {
-		if ( defined( 'AFBM_DISABLE_PASSWORD' ) && AFBM_DISABLE_PASSWORD ) {
+		if ( defined( 'EKBM_DISABLE_PASSWORD' ) && EKBM_DISABLE_PASSWORD ) {
 			return false;
 		}
 		$security = Settings::get( Installer::OPTION_SECURITY );
@@ -65,7 +65,7 @@ final class Password_Gate {
 	}
 
 	private static function signature( int $expires ): string {
-		return hash_hmac( 'sha256', get_current_user_id() . '|' . wp_get_session_token() . '|' . $expires, wp_salt( 'secure_auth' ) . 'afbm-gate' );
+		return hash_hmac( 'sha256', get_current_user_id() . '|' . wp_get_session_token() . '|' . $expires, wp_salt( 'secure_auth' ) . 'ekbm-gate' );
 	}
 
 	public static function unlock(): void {
@@ -116,7 +116,7 @@ final class Password_Gate {
 	}
 
 	private static function attempts_key(): string {
-		return 'afbm_gate_' . get_current_user_id();
+		return 'ekbm_gate_' . get_current_user_id();
 	}
 
 	public static function is_locked_out(): bool {
@@ -128,15 +128,15 @@ final class Password_Gate {
 	 * while the gate is closed.
 	 */
 	public function handle_unlock(): void {
-		if ( empty( $_POST['afbm_unlock'] ) ) {
+		if ( empty( $_POST['ekbm_unlock'] ) ) {
 			return;
 		}
 
 		if ( ! current_user_can( Admin::CAP ) ) {
-			wp_die( esc_html__( 'You do not have permission to do this.', 'afrit-backup-manager' ), '', [ 'response' => 403 ] );
+			wp_die( esc_html__( 'You do not have permission to do this.', 'eikvakt-backup-manager' ), '', [ 'response' => 403 ] );
 		}
 
-		check_admin_referer( 'afbm_unlock' );
+		check_admin_referer( 'ekbm_unlock' );
 
 		// Back to the screen that asked for the password. wp_get_referer()
 		// returns false when the referer equals the current URL, which is
@@ -144,22 +144,22 @@ final class Password_Gate {
 		$redirect = wp_validate_redirect( (string) wp_get_raw_referer(), admin_url( 'admin.php?page=' . Admin::MENU_DASHBOARD ) );
 
 		if ( self::is_locked_out() ) {
-			wp_safe_redirect( add_query_arg( 'afbm_notice', 'gate_locked', $redirect ) );
+			wp_safe_redirect( add_query_arg( 'ekbm_notice', 'gate_locked', $redirect ) );
 			exit;
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a password is compared as entered; sanitising would alter it.
-		$password = isset( $_POST['afbm_password'] ) ? (string) wp_unslash( $_POST['afbm_password'] ) : '';
+		$password = isset( $_POST['ekbm_password'] ) ? (string) wp_unslash( $_POST['ekbm_password'] ) : '';
 
 		if ( self::verify( $password ) ) {
 			delete_transient( self::attempts_key() );
 			self::unlock();
-			wp_safe_redirect( remove_query_arg( 'afbm_notice', $redirect ) );
+			wp_safe_redirect( remove_query_arg( 'ekbm_notice', $redirect ) );
 			exit;
 		}
 
 		set_transient( self::attempts_key(), (int) get_transient( self::attempts_key() ) + 1, self::LOCKOUT );
-		wp_safe_redirect( add_query_arg( 'afbm_notice', 'gate_wrong', $redirect ) );
+		wp_safe_redirect( add_query_arg( 'ekbm_notice', 'gate_wrong', $redirect ) );
 		exit;
 	}
 
@@ -167,17 +167,17 @@ final class Password_Gate {
 	 * Unlock form markup.
 	 */
 	public static function render_form(): void {
-		echo '<div class="wrap afbm-wrap">';
-		echo '<h1>' . esc_html__( 'Backup Manager is locked', 'afrit-backup-manager' ) . '</h1>';
+		echo '<div class="wrap ekbm-wrap">';
+		echo '<h1>' . esc_html__( 'Backup Manager is locked', 'eikvakt-backup-manager' ) . '</h1>';
 		Admin::render_notice();
-		echo '<div class="afbm-card afbm-gate">';
-		echo '<p>' . esc_html__( 'Backups contain a complete copy of this site. Enter the Backup Manager password to continue.', 'afrit-backup-manager' ) . '</p>';
+		echo '<div class="ekbm-card ekbm-gate">';
+		echo '<p>' . esc_html__( 'Backups contain a complete copy of this site. Enter the Backup Manager password to continue.', 'eikvakt-backup-manager' ) . '</p>';
 		echo '<form method="post">';
-		wp_nonce_field( 'afbm_unlock' );
-		echo '<input type="hidden" name="afbm_unlock" value="1">';
-		echo '<p><label for="afbm_password">' . esc_html__( 'Password', 'afrit-backup-manager' ) . '</label><br>';
-		echo '<input type="password" id="afbm_password" name="afbm_password" class="regular-text" autocomplete="current-password" required autofocus></p>';
-		submit_button( __( 'Unlock', 'afrit-backup-manager' ) );
+		wp_nonce_field( 'ekbm_unlock' );
+		echo '<input type="hidden" name="ekbm_unlock" value="1">';
+		echo '<p><label for="ekbm_password">' . esc_html__( 'Password', 'eikvakt-backup-manager' ) . '</label><br>';
+		echo '<input type="password" id="ekbm_password" name="ekbm_password" class="regular-text" autocomplete="current-password" required autofocus></p>';
+		submit_button( __( 'Unlock', 'eikvakt-backup-manager' ) );
 		echo '</form></div></div>';
 	}
 }

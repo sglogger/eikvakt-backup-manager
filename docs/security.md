@@ -6,9 +6,9 @@
 
 Layers, in `Paths`:
 
-1. **Location.** Default is `dirname(ABSPATH)/afbm-backups-<key>` when that is
+1. **Location.** Default is `dirname(ABSPATH)/ekbm-backups-<key>` when that is
    writable, allowed by `open_basedir`, and positively *not* under
-   `DOCUMENT_ROOT`; otherwise `uploads/afbm-backups-<key>` with a random key.
+   `DOCUMENT_ROOT`; otherwise `uploads/ekbm-backups-<key>` with a random key.
 2. **Deny files** rewritten before every job: `.htaccess` (Apache 2.2/2.4,
    LiteSpeed, `Options -Indexes`), `web.config` (IIS), `index.php`, `index.html`.
 3. **Unguessable names**: random directory key and a random component in every set id.
@@ -17,7 +17,7 @@ Layers, in `Paths`:
    Runs on setup, on saving General settings, daily by cron and on demand. An
    `exposed` result shows an error notice on **every** admin screen, with the
    nginx `location … { deny all; }` block to add.
-5. **Downloads** only via `admin-post.php?action=afbm_download`: capability,
+5. **Downloads** only via `admin-post.php?action=ekbm_download`: capability,
    nonce bound to the set, password gate, file must belong to that set's
    manifest. Streamed with `readfile()`.
 
@@ -26,11 +26,11 @@ Layers, in `Paths`:
 | Entry point | Guard |
 |---|---|
 | Admin screens, POST actions | `manage_options`, nonce, password gate |
-| `wp_ajax_afbm_status`, `wp_ajax_afbm_upload` | `manage_options`, nonce, password gate; upload names must match a set id |
-| `admin_post_afbm_download` | as above + set membership |
+| `wp_ajax_ekbm_status`, `wp_ajax_ekbm_upload` | `manage_options`, nonce, password gate; upload names must match a set id |
+| `admin_post_ekbm_download` | as above + set membership |
 | `admin_post` (OAuth callback) | `manage_options`, single-use `state` bound to user, 15 min |
-| `wp_ajax(_nopriv)_afbm_tick` | HMAC with a 256-bit secret from the work dir; can only advance the queued job |
-| `wp_ajax(_nopriv)_afbm_migrate` | 256-bit token, stored hashed, 24 h, bound to one set and its chain; uniform 403 + delay on failure |
+| `wp_ajax(_nopriv)_ekbm_tick` | HMAC with a 256-bit secret from the work dir; can only advance the queued job |
+| `wp_ajax(_nopriv)_ekbm_migrate` | 256-bit token, stored hashed, 24 h, bound to one set and its chain; uniform 403 + delay on failure |
 
 ## Secrets at rest
 
@@ -44,7 +44,7 @@ once). Rotating the salts invalidates them — by design.
 `Password_Gate`: `password_hash()`; unlock cookie = `expiry|HMAC(user, session
 token, expiry)`, `HttpOnly`, `SameSite=Strict`, admin path only, cleared on
 logout; 5 wrong attempts → 15-minute lockout per user. Changing/removing needs
-the current password. Recovery: `AFBM_DISABLE_PASSWORD`.
+the current password. Recovery: `EKBM_DISABLE_PASSWORD`.
 
 ## Untrusted input in backups
 

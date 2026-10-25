@@ -7,12 +7,12 @@
  * WordPress forget about every backup taken since. The catalog can always be
  * rebuilt from the manifests on disk and on each destination ("Rescan").
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

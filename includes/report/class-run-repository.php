@@ -6,12 +6,12 @@
  * every restore, so the history of what happened survives a database
  * rollback — including the record of that rollback.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -162,15 +162,15 @@ final class Run_Repository {
 	public static function status_label( string $status ): string {
 		switch ( $status ) {
 			case self::STATUS_RUNNING:
-				return __( 'Running', 'afrit-backup-manager' );
+				return __( 'Running', 'eikvakt-backup-manager' );
 			case self::STATUS_SUCCESS:
-				return __( 'Success', 'afrit-backup-manager' );
+				return __( 'Success', 'eikvakt-backup-manager' );
 			case self::STATUS_WARNING:
-				return __( 'Completed with warnings', 'afrit-backup-manager' );
+				return __( 'Completed with warnings', 'eikvakt-backup-manager' );
 			case self::STATUS_FAILED:
-				return __( 'Failed', 'afrit-backup-manager' );
+				return __( 'Failed', 'eikvakt-backup-manager' );
 			case self::STATUS_CANCELLED:
-				return __( 'Cancelled', 'afrit-backup-manager' );
+				return __( 'Cancelled', 'eikvakt-backup-manager' );
 		}
 		return $status;
 	}
@@ -192,11 +192,11 @@ final class Run_Repository {
 	public static function kind_label( string $kind ): string {
 		switch ( $kind ) {
 			case 'backup':
-				return __( 'Backup', 'afrit-backup-manager' );
+				return __( 'Backup', 'eikvakt-backup-manager' );
 			case 'restore':
-				return __( 'Restore', 'afrit-backup-manager' );
+				return __( 'Restore', 'eikvakt-backup-manager' );
 			case 'pull':
-				return __( 'Migration import', 'afrit-backup-manager' );
+				return __( 'Migration import', 'eikvakt-backup-manager' );
 		}
 		return $kind;
 	}
@@ -204,17 +204,17 @@ final class Run_Repository {
 	public static function trigger_label( string $trigger ): string {
 		switch ( $trigger ) {
 			case 'manual':
-				return __( 'Manual', 'afrit-backup-manager' );
+				return __( 'Manual', 'eikvakt-backup-manager' );
 			case 'schedule':
-				return __( 'Scheduled', 'afrit-backup-manager' );
+				return __( 'Scheduled', 'eikvakt-backup-manager' );
 			case 'pre-update':
-				return __( 'Before update', 'afrit-backup-manager' );
+				return __( 'Before update', 'eikvakt-backup-manager' );
 			case 'cli':
-				return __( 'WP-CLI', 'afrit-backup-manager' );
+				return __( 'WP-CLI', 'eikvakt-backup-manager' );
 			case 'migration':
-				return __( 'Migration', 'afrit-backup-manager' );
+				return __( 'Migration', 'eikvakt-backup-manager' );
 			case 'safety':
-				return __( 'Before restore', 'afrit-backup-manager' );
+				return __( 'Before restore', 'eikvakt-backup-manager' );
 		}
 		return $trigger;
 	}

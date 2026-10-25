@@ -2,12 +2,12 @@
 /**
  * The backup list.
  *
- * @package AfritBackupManager
+ * @package EikvaktBackupManager
  */
 
 declare( strict_types = 1 );
 
-namespace AfritBackupManager;
+namespace EikvaktBackupManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,8 +22,8 @@ final class Backups_List_Table extends \WP_List_Table {
 	public function __construct() {
 		parent::__construct(
 			[
-				'singular' => 'afbm-backup',
-				'plural'   => 'afbm-backups',
+				'singular' => 'ekbm-backup',
+				'plural'   => 'ekbm-backups',
 				'ajax'     => false,
 			]
 		);
@@ -34,12 +34,12 @@ final class Backups_List_Table extends \WP_List_Table {
 	 */
 	public function get_columns(): array {
 		return [
-			'created'    => __( 'Date', 'afrit-backup-manager' ),
-			'type'       => __( 'Type', 'afrit-backup-manager' ),
-			'components' => __( 'Contents', 'afrit-backup-manager' ),
-			'size'       => __( 'Size', 'afrit-backup-manager' ),
-			'locations'  => __( 'Stored on', 'afrit-backup-manager' ),
-			'actions'    => __( 'Actions', 'afrit-backup-manager' ),
+			'created'    => __( 'Date', 'eikvakt-backup-manager' ),
+			'type'       => __( 'Type', 'eikvakt-backup-manager' ),
+			'components' => __( 'Contents', 'eikvakt-backup-manager' ),
+			'size'       => __( 'Size', 'eikvakt-backup-manager' ),
+			'locations'  => __( 'Stored on', 'eikvakt-backup-manager' ),
+			'actions'    => __( 'Actions', 'eikvakt-backup-manager' ),
 		];
 	}
 
@@ -81,12 +81,12 @@ final class Backups_List_Table extends \WP_List_Table {
 		$current = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( (string) $_GET['type'] ) ) : '';
 		$base    = admin_url( 'admin.php?page=' . Admin::MENU_BACKUPS );
 		$views   = [
-			''                         => __( 'All', 'afrit-backup-manager' ),
+			''                         => __( 'All', 'eikvakt-backup-manager' ),
 			Manifest::TYPE_FULL        => Admin::type_label( Manifest::TYPE_FULL ),
 			Manifest::TYPE_INCREMENTAL => Admin::type_label( Manifest::TYPE_INCREMENTAL ),
 			Manifest::TYPE_DATABASE    => Admin::type_label( Manifest::TYPE_DATABASE ),
 			Manifest::TYPE_PARTIAL     => Admin::type_label( Manifest::TYPE_PARTIAL ),
-			'kept'                     => __( 'Kept', 'afrit-backup-manager' ),
+			'kept'                     => __( 'Kept', 'eikvakt-backup-manager' ),
 		];
 
 		$out = [];
@@ -102,7 +102,7 @@ final class Backups_List_Table extends \WP_List_Table {
 	}
 
 	public function no_items(): void {
-		esc_html_e( 'No backups yet.', 'afrit-backup-manager' );
+		esc_html_e( 'No backups yet.', 'eikvakt-backup-manager' );
 	}
 
 	/**
@@ -116,11 +116,11 @@ final class Backups_List_Table extends \WP_List_Table {
 			$out .= '<br>' . esc_html( $label );
 		}
 
-		$out .= '<br><code class="afbm-id">' . esc_html( $item->id() ) . '</code>';
+		$out .= '<br><code class="ekbm-id">' . esc_html( $item->id() ) . '</code>';
 
 		if ( $item->site( 'home' ) !== home_url() ) {
 			/* translators: %s: URL of the site the backup comes from */
-			$out .= '<br><span class="afbm-muted">' . esc_html( sprintf( __( 'From %s', 'afrit-backup-manager' ), $item->site( 'home' ) ) ) . '</span>';
+			$out .= '<br><span class="ekbm-muted">' . esc_html( sprintf( __( 'From %s', 'eikvakt-backup-manager' ), $item->site( 'home' ) ) ) . '</span>';
 		}
 
 		return $out;
@@ -133,16 +133,16 @@ final class Backups_List_Table extends \WP_List_Table {
 		$out = Admin::badge( Admin::type_label( $item->type() ), Admin::type_color( $item->type() ) );
 
 		if ( $item->is_kept() ) {
-			$out .= ' ' . Admin::badge( __( 'Keep', 'afrit-backup-manager' ), '#8a2be2' );
+			$out .= ' ' . Admin::badge( __( 'Keep', 'eikvakt-backup-manager' ), '#8a2be2' );
 		} elseif ( $this->protected_by_chain( $item ) ) {
-			$out .= '<br><span class="afbm-muted"><span class="dashicons dashicons-star-half"></span> ' . esc_html__( 'Kept with its chain (a backup in it is marked)', 'afrit-backup-manager' ) . '</span>';
+			$out .= '<br><span class="ekbm-muted"><span class="dashicons dashicons-star-half"></span> ' . esc_html__( 'Kept with its chain (a backup in it is marked)', 'eikvakt-backup-manager' ) . '</span>';
 		}
 
 		if ( $item->is_encrypted() ) {
-			$out .= ' <span class="dashicons dashicons-lock" title="' . esc_attr__( 'Encrypted', 'afrit-backup-manager' ) . '"></span>';
+			$out .= ' <span class="dashicons dashicons-lock" title="' . esc_attr__( 'Encrypted', 'eikvakt-backup-manager' ) . '"></span>';
 		}
 
-		$out .= '<br><span class="afbm-muted">' . esc_html( Run_Repository::trigger_label( (string) $item->data['trigger'] ) ) . '</span>';
+		$out .= '<br><span class="ekbm-muted">' . esc_html( Run_Repository::trigger_label( (string) $item->data['trigger'] ) ) . '</span>';
 
 		return $out;
 	}
@@ -171,22 +171,22 @@ final class Backups_List_Table extends \WP_List_Table {
 		$out    = esc_html( implode( ', ', $labels ) );
 
 		if ( Manifest::TYPE_INCREMENTAL === $item->type() ) {
-			$out .= '<br><span class="afbm-muted">' . esc_html(
+			$out .= '<br><span class="ekbm-muted">' . esc_html(
 				sprintf(
 					/* translators: 1: changed files, 2: deleted files */
-					__( '%1$s changed, %2$s deleted', 'afrit-backup-manager' ),
+					__( '%1$s changed, %2$s deleted', 'eikvakt-backup-manager' ),
 					number_format_i18n( $item->stat( 'changed' ) ),
 					number_format_i18n( $item->stat( 'deleted' ) )
 				)
 			) . '</span>';
 		} elseif ( $item->stat( 'files' ) > 0 ) {
 			/* translators: %s: number of files */
-			$out .= '<br><span class="afbm-muted">' . esc_html( sprintf( __( '%s files', 'afrit-backup-manager' ), number_format_i18n( $item->stat( 'files' ) ) ) ) . '</span>';
+			$out .= '<br><span class="ekbm-muted">' . esc_html( sprintf( __( '%s files', 'eikvakt-backup-manager' ), number_format_i18n( $item->stat( 'files' ) ) ) ) . '</span>';
 		}
 
 		if ( [] !== $item->tables() ) {
 			/* translators: %d: number of tables */
-			$out .= '<br><span class="afbm-muted">' . esc_html( sprintf( _n( '%d table', '%d tables', count( $item->tables() ), 'afrit-backup-manager' ), count( $item->tables() ) ) ) . '</span>';
+			$out .= '<br><span class="ekbm-muted">' . esc_html( sprintf( _n( '%d table', '%d tables', count( $item->tables() ), 'eikvakt-backup-manager' ), count( $item->tables() ) ) ) . '</span>';
 		}
 
 		return $out;
@@ -219,10 +219,10 @@ final class Backups_List_Table extends \WP_List_Table {
 			admin_url( 'admin.php' )
 		);
 
-		$out = sprintf( '<a class="button button-primary" href="%s">%s</a> ', esc_url( $restore ), esc_html__( 'Restore', 'afrit-backup-manager' ) );
+		$out = sprintf( '<a class="button button-primary" href="%s">%s</a> ', esc_url( $restore ), esc_html__( 'Restore', 'eikvakt-backup-manager' ) );
 
 		if ( Catalog::local_files_present( $item ) ) {
-			$out .= '<details class="afbm-downloads"><summary class="button">' . esc_html__( 'Download', 'afrit-backup-manager' ) . '</summary><ul>';
+			$out .= '<details class="ekbm-downloads"><summary class="button">' . esc_html__( 'Download', 'eikvakt-backup-manager' ) . '</summary><ul>';
 			foreach ( $item->all_file_names() as $file ) {
 				$out .= sprintf( '<li><a href="%s">%s</a></li>', esc_url( Admin::download_url( $item->id(), $file ) ), esc_html( substr( $file, strlen( $item->id() ) + 1 ) ) );
 			}
@@ -230,29 +230,29 @@ final class Backups_List_Table extends \WP_List_Table {
 		}
 
 		ob_start();
-		Admin::form_open( 'toggle_keep', Admin::MENU_BACKUPS, [ 'class' => 'afbm-inline' ] );
+		Admin::form_open( 'toggle_keep', Admin::MENU_BACKUPS, [ 'class' => 'ekbm-inline' ] );
 		printf( '<input type="hidden" name="backup_id" value="%s">', esc_attr( $item->id() ) );
 		printf( '<input type="hidden" name="keep" value="%s">', $item->is_kept() ? '' : '1' );
 		printf(
 			'<button type="submit" class="button" title="%s"><span class="dashicons dashicons-%s"></span> %s</button> ',
-			esc_attr__( 'Kept backups are never deleted by the retention rules.', 'afrit-backup-manager' ),
+			esc_attr__( 'Kept backups are never deleted by the retention rules.', 'eikvakt-backup-manager' ),
 			$item->is_kept() ? 'star-filled' : 'star-empty',
-			esc_html( $item->is_kept() ? __( 'Unkeep', 'afrit-backup-manager' ) : __( 'Keep', 'afrit-backup-manager' ) )
+			esc_html( $item->is_kept() ? __( 'Unkeep', 'eikvakt-backup-manager' ) : __( 'Keep', 'eikvakt-backup-manager' ) )
 		);
 		echo '</form>';
 		$out .= (string) ob_get_clean();
 
 		ob_start();
-		Admin::form_open( 'delete_backup', Admin::MENU_BACKUPS, [ 'class' => 'afbm-inline afbm-confirm-delete' ] );
+		Admin::form_open( 'delete_backup', Admin::MENU_BACKUPS, [ 'class' => 'ekbm-inline ekbm-confirm-delete' ] );
 		printf( '<input type="hidden" name="backup_id" value="%s">', esc_attr( $item->id() ) );
-		printf( '<button type="submit" class="button afbm-button-delete">%s</button>', esc_html__( 'Delete', 'afrit-backup-manager' ) );
+		printf( '<button type="submit" class="button ekbm-button-delete">%s</button>', esc_html__( 'Delete', 'eikvakt-backup-manager' ) );
 		echo '</form>';
 		$out .= (string) ob_get_clean();
 
 		$dependents = Catalog::dependents( $item->id() );
 		if ( [] !== $dependents ) {
 			/* translators: %d: number of incremental backups */
-			$out .= '<br><span class="afbm-muted">' . esc_html( sprintf( _n( 'Deleting also removes %d later incremental backup.', 'Deleting also removes %d later incremental backups.', count( $dependents ), 'afrit-backup-manager' ), count( $dependents ) ) ) . '</span>';
+			$out .= '<br><span class="ekbm-muted">' . esc_html( sprintf( _n( 'Deleting also removes %d later incremental backup.', 'Deleting also removes %d later incremental backups.', count( $dependents ), 'eikvakt-backup-manager' ), count( $dependents ) ) ) . '</span>';
 		}
 
 		return $out;
