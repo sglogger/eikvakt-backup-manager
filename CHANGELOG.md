@@ -5,6 +5,15 @@ All notable changes to this project are documented here. The format follows
 [Semantic Versioning](https://semver.org/). Mirror every entry into
 `readme.txt` → `== Changelog ==`.
 
+## [1.0.5] — 2026-10-30
+
+### Security
+- Uploaded files, files imported with a migration key and the files listed in any manifest must carry a backup set's own file names (`<id>.manifest.json`, `.files-NNN.zip`, `.db.sql.gz`, `.index.gz`, optionally `.enc`). Before, an administrator upload or a malicious migration source could place a file with another extension, such as `.php`, in the backup directory.
+- FTPS: when the certificate is not trusted, the connection test no longer logs in to read the server's key. The key is read over a connection that ends right after the TLS handshake; the user name and password are only ever sent to a verified (or pinned) server.
+- Restore: `wp-config.php` and this plugin's own files are protected by their real location on disk, whatever spelling a backup's file index uses (`root/./wp-config.php`, `root/wp-content/…`, symlinked folders). Archive entries with `.`/`..` or empty path segments (or a backslash on Windows) are skipped.
+- Database restore: `CREATE TABLE` may only define columns and indexes with known table options and storage engines (no `AS SELECT`, no MERGE/FEDERATED, no comments); `INSERT` may only contain literal values. Before, a manipulated dump could read other tables or, through a MERGE table, write into live MyISAM tables before the swap.
+- Backup directory test: a folder that may be served but has no web address WordPress knows is now reported as "not verified" instead of "outside the web root".
+
 ## [1.0.4] — 2026-10-25
 
 The plugin is renamed from Afrit Backup Manager to **Eikvakt Backup Manager**

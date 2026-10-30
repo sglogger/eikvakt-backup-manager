@@ -41,6 +41,16 @@ final class Sql_Importer {
 		'INSERT INTO'          => '/^INSERT INTO ' . self::TABLE . ' VALUES \(.*\);$/s',
 	];
 
+	/**
+	 * Storage engines a restored table may use. Others can reach beyond the
+	 * table: MERGE writes into other tables, FEDERATED/CONNECT/SPIDER into
+	 * other servers.
+	 */
+	private const ENGINES = 'InnoDB|MyISAM|Aria|MEMORY|ARCHIVE';
+
+	/** Table options SHOW CREATE TABLE writes with a plain word or number as value. */
+	private const TABLE_OPTIONS = 'AUTO_INCREMENT|ROW_FORMAT|PAGE_CHECKSUM|TRANSACTIONAL|CHECKSUM|DELAY_KEY_WRITE|KEY_BLOCK_SIZE|STATS_PERSISTENT|STATS_AUTO_RECALC|STATS_SAMPLE_PAGES|PACK_KEYS|AVG_ROW_LENGTH|MAX_ROWS|MIN_ROWS|PAGE_COMPRESSED|PAGE_COMPRESSION_LEVEL|ENCRYPTED|ENCRYPTION_KEY_ID';
+
 	/** Header lines of our dumper: skipped, never executed. */
 	public static function is_header_line( string $line ): bool {
 		return '' === $line
@@ -86,11 +96,6 @@ final class Sql_Importer {
 				continue;
 			}
 
-			// Table options that place data files elsewhere on the server.
-			if ( 'CREATE TABLE' === $keyword && 1 === preg_match( '/\b(DATA|INDEX)\s+DIRECTORY\b/i', $line ) ) {
-				break;
-			}
-
 			$table = str_replace( '``', '`', $m[1] );
 			if ( ! isset( $map[ $table ] ) ) {
 				return null;
@@ -98,12 +103,172 @@ final class Sql_Importer {
 
 			// $m[1] is the name exactly as quoted in the line.
 			$original = $keyword . ' `' . $m[1] . '`';
-			$temp     = '`' . str_replace( '`', '``', $map[ $table ]['temp'] ) . '`';
+			$rest     = substr( $line, strlen( $original ) );
 
-			return $keyword . ' ' . $temp . substr( $line, strlen( $original ) );
+			// The shape alone is not enough: what follows the name must not
+			// reach any table but the temporary one.
+			if ( 'CREATE TABLE' === $keyword && ! self::is_table_definition( substr( $rest, 1, -1 ) ) ) {
+				break;
+			}
+			if ( 'INSERT INTO' === $keyword && ! self::is_values_list( substr( $rest, strlen( ' VALUES ' ), -1 ) ) ) {
+				break;
+			}
+
+			$temp = '`' . str_replace( '`', '``', $map[ $table ]['temp'] ) . '`';
+
+			return $keyword . ' ' . $temp . $rest;
 		}
 
 		throw new \UnexpectedValueException( 'statement-not-allowed' );
+	}
+
+	/**
+	 * Is this a column list with table options as SHOW CREATE TABLE writes
+	 * them? `(…)` must hold column and index definitions only — no subquery,
+	 * no comment (the server executes versioned comments) — and only listed
+	 * options may follow it.
+	 */
+	public static function is_table_definition( string $definition ): bool {
+		if ( ! str_starts_with( $definition, '(' ) ) {
+			return false;
+		}
+
+		$length = strlen( $definition );
+		$depth  = 0;
+		$end    = -1;
+
+		for ( $i = 0; $i < $length; $i++ ) {
+			$char = $definition[ $i ];
+
+			if ( "'" === $char || '"' === $char || '`' === $char ) {
+				$i = self::skip_quoted( $definition, $i );
+				if ( $i < 0 ) {
+					return false;
+				}
+				continue;
+			}
+			if ( '(' === $char ) {
+				++$depth;
+				continue;
+			}
+			if ( ')' === $char ) {
+				--$depth;
+				if ( 0 === $depth ) {
+					$end = $i;
+					break;
+				}
+				continue;
+			}
+
+			$next = $definition[ $i + 1 ] ?? '';
+			if ( ( '/' === $char && '*' === $next ) || ( '-' === $char && '-' === $next ) || '#' === $char ) {
+				return false;
+			}
+			if ( ctype_alpha( $char ) && ( 0 === $i || ! self::is_word_char( $definition[ $i - 1 ] ) ) ) {
+				$word = strtoupper( substr( $definition, $i, strspn( $definition, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_', $i ) ) );
+				if ( in_array( $word, [ 'SELECT', 'LOAD_FILE' ], true ) ) {
+					return false;
+				}
+			}
+		}
+
+		if ( $end < 0 ) {
+			return false;
+		}
+
+		$option = '(?:DEFAULT\s+)?(?:CHARSET|CHARACTER\s+SET|COLLATE)\s*=?\s*\w+'
+			. '|ENGINE\s*=\s*(?:' . self::ENGINES . ')'
+			. '|(?:' . self::TABLE_OPTIONS . ')\s*=\s*\w+'
+			. "|COMMENT\s*=?\s*'(?:[^'\\\\]|\\\\.|'')*'";
+
+		return 1 === preg_match( '/^(?:\s+(?:' . $option . '))*$/i', substr( $definition, $end + 1 ) );
+	}
+
+	/**
+	 * Is this a list of row tuples made of literals only — NULL, numbers and
+	 * quoted strings? No expression, function or subquery can run.
+	 */
+	public static function is_values_list( string $values ): bool {
+		$length = strlen( $values );
+		$i      = 0;
+
+		while ( true ) {
+			if ( '(' !== ( $values[ $i ] ?? '' ) ) {
+				return false;
+			}
+			++$i;
+
+			while ( true ) {
+				$char = $values[ $i ] ?? '';
+
+				if ( "'" === $char ) {
+					$i = self::skip_quoted( $values, $i );
+					if ( $i < 0 ) {
+						return false;
+					}
+					++$i;
+				} elseif ( 'NULL' === substr( $values, $i, 4 ) ) {
+					$i += 4;
+				} else {
+					$n = strspn( $values, '-+0123456789.eE', $i );
+					if ( 0 === $n || ! is_numeric( substr( $values, $i, $n ) ) ) {
+						return false;
+					}
+					$i += $n;
+				}
+
+				$char = $values[ $i ] ?? '';
+				++$i;
+				if ( ')' === $char ) {
+					break;
+				}
+				if ( ',' !== $char ) {
+					return false;
+				}
+			}
+
+			if ( $i === $length ) {
+				return true;
+			}
+			if ( ',' !== $values[ $i ] ) {
+				return false;
+			}
+			++$i;
+		}
+	}
+
+	/**
+	 * Position of the quote that closes the literal or identifier opening at
+	 * $start, or -1. Strings know backslash escapes and doubled quotes,
+	 * identifiers only doubled backticks — as the server reads them.
+	 */
+	private static function skip_quoted( string $sql, int $start ): int {
+		$quote  = $sql[ $start ];
+		$stops  = '`' === $quote ? '`' : $quote . '\\';
+		$length = strlen( $sql );
+		$i      = $start + 1;
+
+		while ( $i < $length ) {
+			$i += strcspn( $sql, $stops, $i );
+			if ( $i >= $length ) {
+				return -1;
+			}
+			if ( '\\' === $sql[ $i ] ) {
+				$i += 2;
+				continue;
+			}
+			if ( ( $sql[ $i + 1 ] ?? '' ) === $quote ) {
+				$i += 2;
+				continue;
+			}
+			return $i;
+		}
+
+		return -1;
+	}
+
+	private static function is_word_char( string $char ): bool {
+		return ctype_alnum( $char ) || '_' === $char;
 	}
 
 	/**

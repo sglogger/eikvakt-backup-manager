@@ -153,10 +153,11 @@ $ekbm_tile = static function ( string $label, string $value, string $detail, str
 		);
 
 		$ekbm_exposure_labels = [
-			'outside'   => [ __( 'Outside the web root', 'eikvakt-backup-manager' ), 'ok' ],
-			'protected' => [ __( 'Protected', 'eikvakt-backup-manager' ), 'ok' ],
-			'exposed'   => [ __( 'EXPOSED', 'eikvakt-backup-manager' ), 'bad' ],
-			'unknown'   => [ __( 'Not verified', 'eikvakt-backup-manager' ), 'warn' ],
+			'outside'    => [ __( 'Outside the web root', 'eikvakt-backup-manager' ), 'ok' ],
+			'protected'  => [ __( 'Protected', 'eikvakt-backup-manager' ), 'ok' ],
+			'exposed'    => [ __( 'EXPOSED', 'eikvakt-backup-manager' ), 'bad' ],
+			'untestable' => [ __( 'Not verified', 'eikvakt-backup-manager' ), 'warn' ],
+			'unknown'    => [ __( 'Not verified', 'eikvakt-backup-manager' ), 'warn' ],
 		];
 		$ekbm_exp             = $ekbm_exposure_labels[ $ekbm_exposure['status'] ] ?? $ekbm_exposure_labels['unknown'];
 		$ekbm_tile(

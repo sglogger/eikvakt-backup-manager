@@ -26,6 +26,51 @@ final class ManifestTest extends TestCase {
 		$this->assertNull( Manifest::from_json( 'not json' ) );
 	}
 
+	public function test_set_file_names_accept_only_what_a_backup_writes(): void {
+		$id = 'site_20261019-120000_f_a1b2c3d4';
+
+		foreach ( [ '.manifest.json', '.files-001.zip', '.files-1234.zip.enc', '.db.sql.gz', '.db.sql.gz.enc', '.index.gz', '.index.gz.enc' ] as $suffix ) {
+			$this->assertTrue( Manifest::is_set_file_name( $id, $id . $suffix ), $suffix );
+		}
+
+		$bad = [
+			$id . '.php',
+			$id . '.files-001.zip.php',
+			$id . '.manifest.json.enc',
+			$id . '.db.sql.gz/../x.php',
+			'site_20261019-120000_f_ffffffff.db.sql.gz',
+			'shell.php',
+			'',
+		];
+		foreach ( $bad as $name ) {
+			$this->assertFalse( Manifest::is_set_file_name( $id, $name ), $name );
+		}
+
+		$this->assertFalse( Manifest::is_set_file_name( '../x', '../x.db.sql.gz' ) );
+	}
+
+	public function test_from_json_refuses_foreign_file_names(): void {
+		$id = 'site_20261019-120000_f_a1b2c3d4';
+
+		$this->assertNull( Manifest::from_json( self::manifest_json( $id, 'shell.php' ) ) );
+		$this->assertNull( Manifest::from_json( self::manifest_json( $id, '../../wp-config.php' ) ) );
+		$this->assertNotNull( Manifest::from_json( self::manifest_json( $id, $id . '.db.sql.gz' ) ) );
+	}
+
+	private static function manifest_json( string $id, string $file ): string {
+		$file = [
+			'name' => $file,
+			'kind' => Manifest::KIND_DB,
+			'size' => 1,
+		];
+		return (string) json_encode(
+			[
+				'id'    => $id,
+				'files' => [ $file ],
+			]
+		);
+	}
+
 	public function test_files_and_manifest_last(): void {
 		$m = new Manifest( [ 'id' => 'site_20261019-120000_f_a1b2c3d4' ] );
 		$m->add_file( 'site_20261019-120000_f_a1b2c3d4.files-001.zip', Manifest::KIND_FILES, 100 );

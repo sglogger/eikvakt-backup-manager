@@ -45,6 +45,9 @@ final class Storage_Ftp implements Storage_Driver {
 	/** Public-key pin of the certificate seen by the last failed TLS test. */
 	public string $seen_pin = '';
 
+	/** cURL error number of the last request, 0 on success. */
+	private int $last_errno = 0;
+
 	/**
 	 * @param array<string, mixed> $config Destination config with secrets opened.
 	 */
@@ -73,6 +76,17 @@ final class Storage_Ftp implements Storage_Driver {
 	}
 
 	/**
+	 * Host name or bracketed IPv6 address, validated.
+	 */
+	private function host(): string {
+		$host = (string) ( $this->config['host'] ?? '' );
+		if ( 1 !== preg_match( '/^[a-z0-9.\-]+$|^\[[0-9a-f:]+\]$/i', $host ) ) {
+			throw new \RuntimeException( esc_html__( 'The FTP host name is not valid.', 'eikvakt-backup-manager' ) );
+		}
+		return $host;
+	}
+
+	/**
 	 * cURL URL of the folder (trailing slash) or of a file in it.
 	 */
 	private function url( string $name = '' ): string {
@@ -80,10 +94,7 @@ final class Storage_Ftp implements Storage_Driver {
 			throw new \RuntimeException( 'Invalid file name.' );
 		}
 
-		$host = (string) ( $this->config['host'] ?? '' );
-		if ( 1 !== preg_match( '/^[a-z0-9.\-]+$|^\[[0-9a-f:]+\]$/i', $host ) ) {
-			throw new \RuntimeException( esc_html__( 'The FTP host name is not valid.', 'eikvakt-backup-manager' ) );
-		}
+		$host = $this->host();
 
 		$dir      = $this->dir();
 		$segments = array_map( 'rawurlencode', array_values( array_filter( explode( '/', $dir ), 'strlen' ) ) );
@@ -102,7 +113,7 @@ final class Storage_Ftp implements Storage_Driver {
 	 * @param array<int, mixed> $options Additional options.
 	 * @return \CurlHandle
 	 */
-	private function handle( string $url, array $options = [], bool $verify = true ) {
+	private function handle( string $url, array $options = [] ) {
 		if ( ! self::is_available() ) {
 			throw new \RuntimeException( esc_html__( 'The PHP cURL extension is not installed on this server.', 'eikvakt-backup-manager' ) );
 		}
@@ -137,8 +148,8 @@ final class Storage_Ftp implements Storage_Driver {
 				$base[ CURLOPT_SSL_VERIFYPEER ]  = false;
 				$base[ CURLOPT_SSL_VERIFYHOST ]  = 0;
 			} else {
-				$base[ CURLOPT_SSL_VERIFYPEER ] = $verify;
-				$base[ CURLOPT_SSL_VERIFYHOST ] = $verify ? 2 : 0;
+				$base[ CURLOPT_SSL_VERIFYPEER ] = true;
+				$base[ CURLOPT_SSL_VERIFYHOST ] = 2;
 			}
 		}
 
@@ -163,6 +174,8 @@ final class Storage_Ftp implements Storage_Driver {
 		curl_close( $curl );
 		// phpcs:enable
 
+		$this->last_errno = $errno;
+
 		if ( 0 !== $errno ) {
 			throw new \RuntimeException( esc_html( self::explain( $errno, $error ) ) );
 		}
@@ -174,6 +187,7 @@ final class Storage_Ftp implements Storage_Driver {
 		switch ( $errno ) {
 			case 64: // CURLE_USE_SSL_FAILED.
 				return __( 'The server does not support FTPS (TLS). Nothing was sent. Use SFTP, enable TLS on the server, or — only on a trusted network — switch FTPS off.', 'eikvakt-backup-manager' );
+			case 51: // CURLE_PEER_FAILED_VERIFICATION before cURL 7.62.
 			case 60: // CURLE_PEER_FAILED_VERIFICATION.
 			case 77: // CURLE_SSL_CACERT_BADFILE.
 				return __( 'The server\'s TLS certificate could not be verified, so nothing was sent. If this is your own server with a self-signed certificate, pin its key (see "Test").', 'eikvakt-backup-manager' );
@@ -214,25 +228,50 @@ final class Storage_Ftp implements Storage_Driver {
 	 * Public-key pin (`sha256//base64`) of the server's certificate, read
 	 * without verification — only to show it to the administrator for
 	 * comparison, never to trust it automatically.
+	 *
+	 * Uses a connection of its own that ends right after the TLS handshake:
+	 * greeting, `AUTH TLS`, handshake, `QUIT`. No user name, no password and
+	 * no other command ever reach the unverified server. (cURL cannot do
+	 * this: an FTP connection in cURL always logs in.)
 	 */
 	private function read_pin(): string {
-		$curl = $this->handle(
-			$this->url(),
+		if ( ! function_exists( 'openssl_pkey_get_public' ) ) {
+			return '';
+		}
+
+		$host    = $this->host();
+		$context = stream_context_create(
 			[
-				CURLOPT_DIRLISTONLY => true,
-				CURLOPT_CERTINFO    => true,
-				CURLOPT_TIMEOUT     => 20,
-			],
-			false
+				'ssl' => [
+					'verify_peer'       => false,
+					'verify_peer_name'  => false,
+					'capture_peer_cert' => true,
+					'peer_name'         => trim( $host, '[]' ),
+				],
+			]
 		);
-		// phpcs:disable WordPress.WP.AlternativeFunctions -- see handle().
-		curl_exec( $curl );
-		$info = curl_getinfo( $curl, CURLINFO_CERTINFO );
-		curl_close( $curl );
+
+		// phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.PHP.NoSilencedErrors.Discouraged -- a raw FTP control connection; the HTTP API cannot speak FTP. An unreachable server simply yields no pin.
+		$socket = @stream_socket_client( 'tcp://' . $host . ':' . (int) ( $this->config['port'] ?? 21 ), $errno, $errstr, 10, STREAM_CLIENT_CONNECT, $context );
+		if ( false === $socket ) {
+			return '';
+		}
+		stream_set_timeout( $socket, 10 );
+
+		$pem = '';
+		if ( 220 === self::reply( $socket ) && false !== fwrite( $socket, "AUTH TLS\r\n" ) && 234 === self::reply( $socket )
+			&& true === @stream_socket_enable_crypto( $socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT ) ) {
+			$params = stream_context_get_params( $socket );
+			$cert   = $params['options']['ssl']['peer_certificate'] ?? null;
+			if ( $cert instanceof \OpenSSLCertificate ) {
+				openssl_x509_export( $cert, $pem );
+			}
+			fwrite( $socket, "QUIT\r\n" );
+		}
+		fclose( $socket );
 		// phpcs:enable
 
-		$pem = is_array( $info ) && isset( $info[0]['Cert'] ) ? (string) $info[0]['Cert'] : '';
-		if ( '' === $pem || ! function_exists( 'openssl_pkey_get_public' ) ) {
+		if ( '' === $pem ) {
 			return '';
 		}
 
@@ -249,6 +288,31 @@ final class Storage_Ftp implements Storage_Driver {
 		return false === $der ? '' : 'sha256//' . base64_encode( hash( 'sha256', $der, true ) );
 	}
 
+	/**
+	 * Code of the next FTP reply (multi-line replies read to their end), or
+	 * 0 when the server does not answer like an FTP server.
+	 *
+	 * @param resource $socket Control connection.
+	 */
+	private static function reply( $socket ): int {
+		// phpcs:disable WordPress.WP.AlternativeFunctions -- see read_pin().
+		$line = fgets( $socket, 1024 );
+		if ( false === $line || 1 !== preg_match( '/^(\d{3})([ -])/', $line, $m ) ) {
+			return 0;
+		}
+		while ( '-' === $m[2] ) {
+			$line = fgets( $socket, 1024 );
+			if ( false === $line ) {
+				return 0;
+			}
+			if ( str_starts_with( $line, $m[1] . ' ' ) ) {
+				break;
+			}
+		}
+		// phpcs:enable
+		return (int) $m[1];
+	}
+
 	public function test() {
 		$name = 'ekbm-test-' . Util::random_token( 4 ) . '.txt';
 
@@ -259,7 +323,9 @@ final class Storage_Ftp implements Storage_Driver {
 		} catch ( \RuntimeException $e ) {
 			$message = Util::message( $e );
 
-			if ( $this->tls() && '' === trim( (string) ( $this->config['tls_pin'] ?? '' ) ) && str_contains( $message, 'certificate' ) ) {
+			// CURLE_PEER_FAILED_VERIFICATION (51 before cURL 7.62, 60 since):
+			// the certificate was refused before anything was sent.
+			if ( $this->tls() && '' === trim( (string) ( $this->config['tls_pin'] ?? '' ) ) && in_array( $this->last_errno, [ 51, 60 ], true ) ) {
 				$this->seen_pin = $this->read_pin();
 				if ( '' !== $this->seen_pin ) {
 					$message .= ' ' . sprintf(

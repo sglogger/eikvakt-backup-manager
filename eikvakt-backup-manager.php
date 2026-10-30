@@ -3,7 +3,7 @@
  * Plugin Name:       Eikvakt Backup Manager
  * Plugin URI:        https://github.com/sglogger/eikvakt-backup-manager
  * Description:       Backups, restores and migrations for the whole WordPress installation ("Eikvakt" is Norwegian for "oak guard"). Incremental file backups, selectable database tables, encryption, scheduling, retention rules and simultaneous upload to this server, FTP, SFTP, Dropbox and OneDrive. Restore files, database, plugins or themes separately, or move the site to a new domain. There is no PRO version. All free.
- * Version:           1.0.4
+ * Version:           1.0.5
  * Requires at least: 6.5
  * Requires PHP:      8.1
  * Author:            Steven Glogger
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // -----------------------------------------------------------------------------
 // Plugin constants
 // -----------------------------------------------------------------------------
-define( 'EKBM_VERSION', '1.0.4' );
+define( 'EKBM_VERSION', '1.0.5' );
 define( 'EKBM_FILE', __FILE__ );
 define( 'EKBM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EKBM_URL', plugin_dir_url( __FILE__ ) );

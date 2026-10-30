@@ -161,7 +161,7 @@ final class Ajax {
 		// phpcs:enable
 
 		$id = (string) strtok( $name, '.' );
-		if ( ! Util::is_safe_filename( $name ) || ! Manifest::is_valid_id( $id ) ) {
+		if ( ! Util::is_safe_filename( $name ) || ! Manifest::is_set_file_name( $id, $name ) ) {
 			wp_send_json_error( [ 'message' => __( 'This is not a file of an Eikvakt backup set.', 'eikvakt-backup-manager' ) ], 400 );
 		}
 

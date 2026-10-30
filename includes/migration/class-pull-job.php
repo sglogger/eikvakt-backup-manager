@@ -44,7 +44,7 @@ final class Pull_Job implements Job_Handler {
 			}
 			$manifests[] = $manifest->data;
 			foreach ( $manifest->files() as $file ) {
-				if ( ! Util::is_safe_filename( $file['name'] ) ) {
+				if ( ! Util::is_safe_filename( $file['name'] ) || ! Manifest::is_set_file_name( $manifest->id(), $file['name'] ) ) {
 					throw new \RuntimeException( 'The source site sent an invalid file name.' );
 				}
 				$files[] = $file;

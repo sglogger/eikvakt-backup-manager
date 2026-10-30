@@ -18,10 +18,11 @@ $ekbm_security = Settings::get( Installer::OPTION_SECURITY );
 $ekbm_has_pass = Password_Gate::is_enabled();
 
 $ekbm_states = [
-	'outside'   => [ '#00a32a', __( 'Outside the web root — backups cannot be requested by URL at all.', 'eikvakt-backup-manager' ) ],
-	'protected' => [ '#00a32a', __( 'Inside the web root, but the web server refuses to serve it.', 'eikvakt-backup-manager' ) ],
-	'exposed'   => [ '#d63638', __( 'EXPOSED: the web server hands out files from the backup directory. Act now.', 'eikvakt-backup-manager' ) ],
-	'unknown'   => [ '#dba617', __( 'Not verified: the test request could not be made.', 'eikvakt-backup-manager' ) ],
+	'outside'    => [ '#00a32a', __( 'Outside the web root — backups cannot be requested by URL at all.', 'eikvakt-backup-manager' ) ],
+	'protected'  => [ '#00a32a', __( 'Inside the web root, but the web server refuses to serve it.', 'eikvakt-backup-manager' ) ],
+	'exposed'    => [ '#d63638', __( 'EXPOSED: the web server hands out files from the backup directory. Act now.', 'eikvakt-backup-manager' ) ],
+	'untestable' => [ '#dba617', __( 'Not verified: the directory may be inside the web root, but WordPress knows no web address for it, so it cannot be tested. Block it in the web server or move it outside the web root.', 'eikvakt-backup-manager' ) ],
+	'unknown'    => [ '#dba617', __( 'Not verified: the test request could not be made.', 'eikvakt-backup-manager' ) ],
 ];
 $ekbm_state  = $ekbm_states[ $ekbm_exposure['status'] ] ?? $ekbm_states['unknown'];
 ?>

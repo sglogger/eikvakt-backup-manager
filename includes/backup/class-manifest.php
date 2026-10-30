@@ -100,6 +100,35 @@ final class Manifest {
 		return $id . '.manifest.json';
 	}
 
+	/**
+	 * Is this the name of a file of set `$id`? Only the names a backup job
+	 * writes are accepted — the manifest, ZIP parts, the SQL dump and the
+	 * index, each optionally encrypted — so an upload, an import or a
+	 * tampered manifest can never place anything else (a `.php` file, a path)
+	 * in the backup directory.
+	 */
+	public static function is_set_file_name( string $id, string $name ): bool {
+		if ( ! self::is_valid_id( $id ) ) {
+			return false;
+		}
+		if ( self::manifest_name( $id ) === $name ) {
+			return true;
+		}
+		return 1 === preg_match( '/^' . preg_quote( $id, '/' ) . '\.(?:files-\d{3,}\.zip|db\.sql\.gz|index\.gz)(?:\.enc)?$/', $name );
+	}
+
+	/**
+	 * Does every file the manifest lists have a name of this set?
+	 */
+	public function has_valid_file_names(): bool {
+		foreach ( $this->files() as $file ) {
+			if ( ! self::is_set_file_name( $this->id(), $file['name'] ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static function from_json( string $json ): ?self {
 		$data = json_decode( $json, true );
 
@@ -107,7 +136,9 @@ final class Manifest {
 			return null;
 		}
 
-		return new self( $data );
+		$manifest = new self( $data );
+
+		return $manifest->has_valid_file_names() ? $manifest : null;
 	}
 
 	public function to_json(): string {

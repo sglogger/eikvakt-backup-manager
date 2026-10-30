@@ -4,7 +4,7 @@ Tags: backup, restore, migration, incremental backup, cloud backup
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -168,6 +168,13 @@ Backups cover the whole network installation. Restoring individual sites of a ne
 
 == Changelog ==
 
+= 1.0.5 =
+* Security: uploads, migration imports and manifests only accept a backup set's own file names; nothing else (such as a .php file) can be placed in the backup directory.
+* Security: the FTPS connection test no longer logs in to an untrusted server to read its key; user name and password only go to a verified or pinned server.
+* Security: a restore protects wp-config.php and this plugin by their real location on disk, whatever path spelling a backup uses.
+* Security: a database restore only accepts table definitions with known options and storage engines and rows of plain values; a manipulated dump can no longer reach other tables.
+* Changed: a backup folder that may be web-served but has no known web address is shown as "not verified" instead of "outside the web root".
+
 = 1.0.4 =
 * Changed: the plugin is now called Eikvakt Backup Manager (slug eikvakt-backup-manager). Settings, backups and migration keys of the earlier name are not carried over.
 * Changed: SFTP uses phpseclib 4.
@@ -194,6 +201,9 @@ Backups cover the whole network installation. Restoring individual sites of a ne
 * First release.
 
 == Upgrade Notice ==
+
+= 1.0.5 =
+Security release: stricter checks for imported backups, restores and database dumps, and a safer FTPS connection test. Recommended for everyone.
 
 = 1.0.4 =
 New name and slug: Eikvakt Backup Manager. phpseclib 4 for SFTP.

@@ -28,20 +28,49 @@ final class SqlImporterTest extends TestCase {
 	 */
 	public static function disallowed_lines(): array {
 		return [
-			'update'              => [ "UPDATE `wp_users` SET user_pass='x';" ],
-			'delete'              => [ 'DELETE FROM wp_users;' ],
-			'alter'               => [ 'ALTER TABLE `wp_options` ADD x int;' ],
-			'lower-case insert'   => [ 'insert into `wp_options` values (1);' ],
-			'insert select'       => [ 'INSERT INTO `wp_options` SELECT * FROM wp_users;' ],
-			'insert no semicolon' => [ 'INSERT INTO `wp_options` VALUES (1)' ],
-			'drop other shape'    => [ 'DROP TABLE `wp_options`;' ],
-			'drop with suffix'    => [ 'DROP TABLE IF EXISTS `wp_options`; DROP TABLE wp_users;' ],
-			'create as select'    => [ 'CREATE TABLE `wp_options` AS SELECT * FROM wp_users;' ],
-			'data directory'      => [ "CREATE TABLE `wp_options` (id int) DATA DIRECTORY='/tmp';" ],
-			'index directory'     => [ "CREATE TABLE `wp_options` (id int) INDEX  DIRECTORY = '/tmp';" ],
-			'grant'               => [ "GRANT ALL ON *.* TO 'x'@'%';" ],
-			'set other'           => [ 'SET GLOBAL general_log = 1;' ],
+			'update'                   => [ "UPDATE `wp_users` SET user_pass='x';" ],
+			'delete'                   => [ 'DELETE FROM wp_users;' ],
+			'alter'                    => [ 'ALTER TABLE `wp_options` ADD x int;' ],
+			'lower-case insert'        => [ 'insert into `wp_options` values (1);' ],
+			'insert select'            => [ 'INSERT INTO `wp_options` SELECT * FROM wp_users;' ],
+			'insert no semicolon'      => [ 'INSERT INTO `wp_options` VALUES (1)' ],
+			'drop other shape'         => [ 'DROP TABLE `wp_options`;' ],
+			'drop with suffix'         => [ 'DROP TABLE IF EXISTS `wp_options`; DROP TABLE wp_users;' ],
+			'create as select'         => [ 'CREATE TABLE `wp_options` AS SELECT * FROM wp_users;' ],
+			'data directory'           => [ "CREATE TABLE `wp_options` (id int) DATA DIRECTORY='/tmp';" ],
+			'index directory'          => [ "CREATE TABLE `wp_options` (id int) INDEX  DIRECTORY = '/tmp';" ],
+			'grant'                    => [ "GRANT ALL ON *.* TO 'x'@'%';" ],
+			'set other'                => [ 'SET GLOBAL general_log = 1;' ],
+			// External review 30 October 2026 (F4) and relatives.
+			'create columns as select' => [ 'CREATE TABLE `wp_options` (id int) AS SELECT id FROM wp_users;' ],
+			'merge engine'             => [ 'CREATE TABLE `wp_options` (id int) ENGINE=MRG_MyISAM UNION=(wp_users) INSERT_METHOD=LAST;' ],
+			'federated engine'         => [ "CREATE TABLE `wp_options` (id int) ENGINE=FEDERATED CONNECTION='mysql://u@h/db/t';" ],
+			'versioned comment'        => [ 'CREATE TABLE `wp_options` (id int /*!50000 ) ENGINE=MRG_MyISAM UNION=(wp_users */);' ],
+			'subquery in body'         => [ 'CREATE TABLE `wp_options` (id int DEFAULT (SELECT 1));' ],
+			'load_file in body'        => [ "CREATE TABLE `wp_options` (x text DEFAULT (LOAD_FILE('/etc/passwd')));" ],
+			'unknown option'           => [ 'CREATE TABLE `wp_options` (id int) ENGINE=InnoDB PARTITION BY HASH(id);' ],
+			'insert subquery'          => [ 'INSERT INTO `wp_options` VALUES ((SELECT user_pass FROM wp_users LIMIT 1));' ],
+			'insert load_file'         => [ "INSERT INTO `wp_options` VALUES (LOAD_FILE('/etc/passwd'));" ],
+			'insert function'          => [ 'INSERT INTO `wp_options` VALUES (1,SLEEP(5));' ],
+			'insert later tuple'       => [ "INSERT INTO `wp_options` VALUES (1,'a'),(2,x());" ],
+			'insert hex literal'       => [ 'INSERT INTO `wp_options` VALUES (0x41);' ],
+			'insert open string'       => [ "INSERT INTO `wp_options` VALUES ('a\\');" ],
 		];
+	}
+
+	public function test_real_dump_lines_are_accepted(): void {
+		$map = Sql_Importer::map_tables( [ 'wp_options' ], 'wp_', 'wp_', 't1' );
+
+		$lines = [
+			"CREATE TABLE `wp_options` (   `option_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,   `option_name` varchar(191) NOT NULL DEFAULT '',   `option_value` longtext NOT NULL,   `autoload` varchar(20) NOT NULL DEFAULT 'yes',   PRIMARY KEY (`option_id`),   UNIQUE KEY `option_name` (`option_name`),   KEY `autoload` (`autoload`) ) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;",
+			"CREATE TABLE `wp_options` (   `id` int(11) NOT NULL,   `selected` tinyint(1) DEFAULT 0 COMMENT 'SELECT (this)' ) ENGINE=Aria DEFAULT CHARSET=utf8mb4 PAGE_CHECKSUM=1 TRANSACTIONAL=1 COMMENT='it''s (fine)';",
+			"INSERT INTO `wp_options` VALUES (1,'it\\'s','a''b','\\\\',NULL,'(SELECT 1); DROP TABLE x;'),(2,'',NULL,'x','y','z');",
+			'INSERT INTO `wp_options` VALUES (-1.5e3,0,NULL);',
+		];
+
+		foreach ( $lines as $line ) {
+			$this->assertNotNull( Sql_Importer::rewrite( $line, $map ), $line );
+		}
 	}
 
 	/**

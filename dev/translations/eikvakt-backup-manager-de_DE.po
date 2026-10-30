@@ -1720,6 +1720,16 @@ msgstr ""
 msgid "Not verified: the test request could not be made."
 msgstr "Nicht überprüft: Die Testanfrage konnte nicht durchgeführt werden."
 
+#: admin/views/settings/tab-security.php:24
+msgid ""
+"Not verified: the directory may be inside the web root, but WordPress knows "
+"no web address for it, so it cannot be tested. Block it in the web server "
+"or move it outside the web root."
+msgstr ""
+"Nicht überprüft: Das Verzeichnis liegt womöglich im Web-Root, aber WordPress "
+"kennt keine Webadresse dafür, darum kann es nicht getestet werden. Sperre es "
+"im Webserver oder verschiebe es außerhalb des Web-Roots."
+
 #: admin/views/settings/tab-security.php:31
 msgid "Location"
 msgstr "Speicherort"

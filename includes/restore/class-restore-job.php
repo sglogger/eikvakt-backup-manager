@@ -355,7 +355,6 @@ final class Restore_Job implements Job_Handler {
 
 		$index      = File_Index::load( self::plain( $state, $index_files[0] ) );
 		$include_wp = ! empty( $job['params']['wp_config'] );
-		$own_plugin = 'content/plugins/' . dirname( EKBM_BASENAME ) . '/';
 
 		$lists = [];
 		$count = 0;
@@ -364,7 +363,7 @@ final class Restore_Job implements Job_Handler {
 			if ( ! in_array( Components::classify( $path ), $file_components, true ) ) {
 				continue;
 			}
-			if ( ! self::restorable( $path, $include_wp, $own_plugin ) ) {
+			if ( '' === self::target( $path, $include_wp ) ) {
 				continue;
 			}
 
@@ -423,18 +422,72 @@ final class Restore_Job implements Job_Handler {
 	}
 
 	/**
-	 * Files that are never overwritten by a restore.
+	 * Absolute path an archive path is restored to, or '' when it must not
+	 * be written (or pruned).
+	 *
+	 * The protections are decided on the real place on disk, not on the
+	 * spelling in the index: an index from elsewhere may address the same
+	 * file in another way (`root/wp-content/…` instead of `content/…`, a
+	 * symlinked parent folder).
 	 */
-	private static function restorable( string $path, bool $include_wp_config, string $own_plugin ): bool {
+	private static function target( string $archive_path, bool $include_wp_config ): string {
+		// Only the canonical spelling our scanner writes: no `.`/`..` or empty
+		// segments, and on Windows no backslash, a second separator there.
+		if ( ! File_Rules::is_valid_path( $archive_path ) || ( '\\' === DIRECTORY_SEPARATOR && str_contains( $archive_path, '\\' ) ) ) {
+			return '';
+		}
+
+		$target = File_Scanner::real_path( $archive_path );
+		if ( '' === $target ) {
+			return '';
+		}
+
+		$real    = self::canonical( $target );
+		$content = self::canonical( File_Scanner::root_dir( 'content' ) );
+
+		// wp-content is backed up under content/ only; under root/ it would
+		// bypass the component choice and the protections below.
+		if ( str_starts_with( $archive_path, 'root/' ) && self::is_within( $real, $content ) ) {
+			return '';
+		}
+
 		// This plugin's own code: replacing it mid-restore with an older copy
 		// would change the code that is running the restore.
-		if ( str_starts_with( $path, $own_plugin ) ) {
-			return false;
+		if ( self::is_within( $real, self::canonical( EKBM_DIR ) ) ) {
+			return '';
 		}
-		if ( ! $include_wp_config && 'root/wp-config.php' === $path ) {
-			return false;
+
+		if ( ! $include_wp_config && self::canonical( ABSPATH . 'wp-config.php' ) === $real ) {
+			return '';
 		}
-		return true;
+
+		return $target;
+	}
+
+	private static function is_within( string $path, string $dir ): bool {
+		return $path === $dir || str_starts_with( $path, $dir . '/' );
+	}
+
+	/**
+	 * A path with symlinks resolved, also for a file that does not exist yet:
+	 * the nearest existing parent is resolved, the rest appended.
+	 */
+	private static function canonical( string $path ): string {
+		$path   = untrailingslashit( wp_normalize_path( $path ) );
+		$suffix = '';
+
+		while ( ! file_exists( $path ) && ! is_link( $path ) ) {
+			$parent = dirname( $path );
+			if ( $parent === $path ) {
+				break;
+			}
+			$suffix = '/' . basename( $path ) . $suffix;
+			$path   = $parent;
+		}
+
+		$real = realpath( $path );
+
+		return untrailingslashit( wp_normalize_path( false !== $real ? $real : $path ) ) . $suffix;
 	}
 
 	/**
@@ -476,7 +529,7 @@ final class Restore_Job implements Job_Handler {
 				}
 
 				$entry = File_Index::parse_line( $line );
-				if ( null !== $entry && ! self::extract( $zips, $entry[0], $entry[2] ) ) {
+				if ( null !== $entry && ! self::extract( $zips, $entry[0], $entry[2], ! empty( $job['params']['wp_config'] ) ) ) {
 					$progress['failed'][] = $entry[0];
 				}
 
@@ -520,9 +573,11 @@ final class Restore_Job implements Job_Handler {
 	 *
 	 * @param \ZipArchive[] $zips Parts of the holder set.
 	 */
-	private static function extract( array $zips, string $archive_path, int $mtime ): bool {
-		$target = File_Scanner::real_path( $archive_path );
-		if ( '' === $target || str_contains( $archive_path, '../' ) ) {
+	private static function extract( array $zips, string $archive_path, int $mtime, bool $include_wp_config ): bool {
+		// Checked again right before writing: folders may have changed since
+		// the plan was made.
+		$target = self::target( $archive_path, $include_wp_config );
+		if ( '' === $target ) {
 			return false;
 		}
 
@@ -592,7 +647,6 @@ final class Restore_Job implements Job_Handler {
 		$manifest   = Catalog::get( (string) $state['backup_id'] );
 		$index      = File_Index::load( self::plain( $state, $manifest->files_of_kind( Manifest::KIND_INDEX )[0] ) );
 		$include_wp = ! empty( $job['params']['wp_config'] );
-		$own_plugin = 'content/plugins/' . dirname( EKBM_BASENAME ) . '/';
 		$only       = array_map( 'strval', (array) ( $manifest->data['only'] ?? [] ) );
 		$removed    = 0;
 
@@ -600,7 +654,7 @@ final class Restore_Job implements Job_Handler {
 		$list = fopen( (string) $state['prune']['list'], 'rb' );
 		while ( false !== $list && false !== ( $line = fgets( $list ) ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- line reader.
 			$entry = File_Index::parse_line( $line );
-			if ( null === $entry || isset( $index[ $entry[0] ] ) || ! self::restorable( $entry[0], $include_wp, $own_plugin ) ) {
+			if ( null === $entry || isset( $index[ $entry[0] ] ) || '' === self::target( $entry[0], $include_wp ) ) {
 				continue;
 			}
 			if ( ! self::within( $entry[0], $only ) ) {

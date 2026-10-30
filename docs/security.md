@@ -13,7 +13,10 @@ Layers, in `Paths`:
    LiteSpeed, `Options -Indexes`), `web.config` (IIS), `index.php`, `index.html`.
 3. **Unguessable names**: random directory key and a random component in every set id.
 4. **Self-test** (`Paths::check_exposure()`): writes a probe file with a random
-   token, requests it over HTTP, records `outside|protected|exposed|unknown`.
+   token, requests it over HTTP, records `outside|protected|exposed|untestable|unknown`.
+   `outside` only when the folder is positively not under the document root
+   (in cron/CLI the one recorded by the last web request); a folder that may
+   be served but has no URL WordPress knows is `untestable`, never `outside`.
    Runs on setup, on saving General settings, daily by cron and on demand. An
    `exposed` result shows an error notice on **every** admin screen, with the
    nginx `location … { deny all; }` block to add.
@@ -48,12 +51,24 @@ the current password. Recovery: `EKBM_DISABLE_PASSWORD`.
 
 ## Untrusted input in backups
 
-A backup may come from another site. Therefore: set ids and file names are
-validated by pattern before use; `unserialize()` never instantiates objects;
-archive entries are written only below `root/`/`content/` targets
-(`File_Scanner::real_path()`), never with `../`; SQL from a dump only runs
-against temporary tables until the swap; the dump format is restricted to
-`DROP`/`CREATE`/`INSERT` lines for the selected tables.
+A backup may come from another site. Therefore: set ids are validated by
+pattern before use, and a file of a set must be named exactly like the files a
+backup job writes (`<id>.manifest.json`, `<id>.files-NNN.zip`,
+`<id>.db.sql.gz`, `<id>.index.gz`, optionally `.enc`;
+`Manifest::is_set_file_name()`) — for uploads, migration imports and every
+manifest read from disk or remote storage, so nothing else (a `.php` file, a
+path) ever lands in the backup directory; `unserialize()` never instantiates
+objects; archive entries are written only below `root/`/`content/` targets
+(`File_Scanner::real_path()`) and only when they pass
+`File_Rules::is_valid_path()` (no `.`/`..` segments, no backslash on
+Windows); the protected files (`wp-config.php` unless chosen, this plugin)
+are compared with the real target on disk, symlinks resolved, and
+`root/wp-content/…` is refused (`Restore_Job::target()`); SQL from a dump
+only runs against temporary tables until the swap; the dump format is
+restricted to `DROP`/`CREATE`/`INSERT` lines for the selected tables, a
+`CREATE` to column definitions without subqueries or comments plus listed
+table options and engines (no MERGE/FEDERATED/…), an `INSERT` to tuples of
+literals (`NULL`, numbers, quoted strings).
 
 ## External review (19 October 2026) and fixes
 
@@ -65,6 +80,16 @@ against temporary tables until the swap; the dump format is restricted to
 | F4 | SSRF through migration keys | Pulls use `reject_unsafe_urls` and no redirects; plain http and private/loopback/link-local targets or non-standard ports only with an explicit "private network" opt-in (`--allow-private`). |
 | F5 | Unbounded PBKDF2 iterations from the file header | Header values above 5 000 000 are rejected before key derivation; unit test with a forged header. |
 | F6 | Loopback TLS off; exposure test too optimistic | Loopbacks and the probe follow core's `https_local_ssl_verify` filter (WordPress convention for requests to itself). The probe now tests `.zip`, `.gz`, `.enc`, `.json` and `.txt`; only 401/403/404/410 count as protected, anything else (200 without the token, redirects, errors) is `unknown`. |
+
+## External review (30 October 2026) and fixes
+
+| ID | Finding | Fix |
+|---|---|---|
+| F1 | FTPS test sent the credentials to a server whose certificate had just been refused (reading the pin used a logged-in, unverified cURL connection) | The pin is read over a connection of its own that ends after the handshake (`AUTH TLS`, handshake, `QUIT`) — no `USER`/`PASS`. Every cURL handle verifies the certificate or the pin; the unverified mode is gone. The pin is offered on cURL error 51/60, not on a message substring. Verified against a local FTPS server logging every command. |
+| F2 | Migration (and upload) accepted any safe file name, e.g. `index.php`, into the backup directory | `Manifest::is_set_file_name()`: only the names a backup job writes, bound to the set id; enforced for uploads, migration imports and every manifest read (`from_json()`). |
+| F3 | Alternative archive paths (`root/./wp-config.php`, `root/wp-content/plugins/<this plugin>/…`) bypassed the protections | `Restore_Job::target()`: canonical spelling only; protections compared with the real target (symlinks resolved); `root/wp-content/…` refused; checked when planning and again right before writing and pruning. |
+| F4 | `CREATE TABLE … (…) AS SELECT` and `ENGINE=MRG_MyISAM UNION=(…)` passed the allow-list; MERGE wrote into a live table | Body without subqueries/comments, options and engines from a positive list, `INSERT` tuples of literals only. Checked against `SHOW CREATE TABLE` of the WordPress core schema and tables with MyISAM/FULLTEXT, Aria, MEMORY, foreign keys, generated columns and CHECK in MariaDB 11.4; dumper-format values round-trip byte-identically. |
+| F5 | A custom folder under the document root without a URL WordPress knows was reported `outside` without a probe | New status `untestable`; `outside` only when positively outside the document root. |
 
 ## Verifying
 

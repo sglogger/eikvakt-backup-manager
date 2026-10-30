@@ -116,21 +116,32 @@ final class Paths {
 	 * @return bool|null True/false, or null when the document root is unknown.
 	 */
 	public static function is_served( string $path ): ?bool {
-		$docroot = isset( $_SERVER['DOCUMENT_ROOT'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['DOCUMENT_ROOT'] ) ) : '';
-
+		$docroot = self::document_root();
 		if ( '' === $docroot ) {
 			return null;
 		}
 
-		$docroot = realpath( $docroot );
-		if ( false === $docroot ) {
-			return null;
-		}
-
-		$docroot = trailingslashit( wp_normalize_path( $docroot ) );
-		$path    = trailingslashit( wp_normalize_path( $path ) );
+		$real = realpath( $path );
+		$path = trailingslashit( wp_normalize_path( false !== $real ? $real : $path ) );
 
 		return str_starts_with( $path, $docroot );
+	}
+
+	/**
+	 * The web server's document root, resolved, with a trailing slash: from
+	 * the current request, or — in cron and WP-CLI, which have none — as
+	 * recorded by the last exposure check made in a web request. '' when
+	 * unknown.
+	 */
+	private static function document_root(): string {
+		$docroot = isset( $_SERVER['DOCUMENT_ROOT'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['DOCUMENT_ROOT'] ) ) : '';
+		$docroot = '' !== $docroot ? realpath( $docroot ) : false;
+
+		if ( false !== $docroot ) {
+			return trailingslashit( wp_normalize_path( $docroot ) );
+		}
+
+		return (string) ( ( (array) get_option( Installer::OPTION_EXPOSURE, [] ) )['docroot'] ?? '' );
 	}
 
 	private static function open_basedir_allows( string $path ): bool {
@@ -338,11 +349,12 @@ final class Paths {
 	 * Request a probe file from the backup directory over HTTP and record
 	 * whether the server handed it out.
 	 *
-	 * Status values: `outside` (not below any web-served directory),
-	 * `protected` (the server refused), `exposed` (the server served the probe
-	 * — act now), `unknown` (the loopback request itself failed).
+	 * Status values: `outside` (not below the document root), `protected`
+	 * (the server refused), `exposed` (the server served the probe — act
+	 * now), `untestable` (possibly served, but WordPress knows no URL for it,
+	 * so it cannot be probed), `unknown` (the loopback request itself failed).
 	 *
-	 * @return array{status:string, checked:int, url:string, detail:string}
+	 * @return array{status:string, checked:int, url:string, detail:string, docroot:string}
 	 */
 	public static function check_exposure(): array {
 		self::ensure();
@@ -353,11 +365,19 @@ final class Paths {
 			'checked' => time(),
 			'url'     => '',
 			'detail'  => '',
+			'docroot' => self::document_root(),
 		];
 
+		$served    = self::is_served( $dir );
 		$probe_url = self::url_for( $dir . '/' . self::PROBE_PREFIX . 'x.txt' );
-		if ( '' === $probe_url || false === self::is_served( $dir ) ) {
-			$result['status'] = 'outside';
+
+		// With a known URL the probe decides. Without one, only a path
+		// positively outside the document root is "outside": the folder may
+		// still be served under a URL WordPress does not know (e.g. beside a
+		// WordPress subdirectory).
+		if ( '' === $probe_url ) {
+			$result['status'] = false === $served ? 'outside' : 'untestable';
+			$result['detail'] = null === $served ? 'document-root-unknown' : '';
 			update_option( Installer::OPTION_EXPOSURE, $result, false );
 			return $result;
 		}
